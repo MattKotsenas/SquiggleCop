@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="eng/targets/artifacts/Artifacts.targets" />
+  <Import Project="eng/targets/compiler/Compiler.targets" />
+  <Import Project="eng/targets/reproducible/Reproducible.targets" />
+  <Import Project="eng/targets/versioning/Versioning.targets" />
+  <Import Project="eng/targets/tests/Tests.targets" />
+  <Import Project="eng/targets/codeanalysis/CodeAnalysis.targets" />
+</Project>
