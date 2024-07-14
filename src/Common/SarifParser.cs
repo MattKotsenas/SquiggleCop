@@ -9,6 +9,8 @@ namespace SquiggleCop.Common;
 /// </summary>
 public class SarifParser
 {
+    private static readonly Version MinimumCompilerVersion = new(4, 8, 0);
+
     /// <summary>
     /// Parses the SARIF log from the given stream and returns the diagnostic configurations.
     /// </summary>
@@ -42,12 +44,28 @@ public class SarifParser
             throw new InvalidDataException($"Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
 
-        // TODO: Assert minimum version of compiler
         return log.Runs.SelectMany(ParseRun).ToList();
     }
 
     private IEnumerable<DiagnosticConfig> ParseRun(Run run)
     {
+        ToolComponent? compiler = run?.Tool.Driver;
+
+        if (!compiler.IsCSharpCompiler())
+        {
+            yield break;
+        }
+
+        if (!Version.TryParse(compiler?.SemanticVersion, out Version? version))
+        {
+            throw new InvalidDataException("Unable to parse compiler version. Ensure you are using SDK 8.0.100 or later.");
+        }
+
+        if (version < MinimumCompilerVersion)
+        {
+            throw new InvalidDataException($"Compiler version '{version}' is less than minimum required version '{MinimumCompilerVersion}'. Ensure you are using SDK 8.0.100 or later.");
+        }
+
         IReadOnlyCollection<ReportingDescriptor> rules = run.GetRules();
         IReadOnlyDictionary<string, List<ConfigurationOverride>> configurationOverrides = run.GetConfigurationOverrides();
 

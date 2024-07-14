@@ -94,4 +94,9 @@ internal static class SarifExtensions
 
         return rc.Level;
     }
+
+    public static bool IsCSharpCompiler(this ToolComponent? tool)
+    {
+        return string.Equals(tool?.Name, "Microsoft (R) Visual C# Compiler", StringComparison.Ordinal);
+    }
 }
