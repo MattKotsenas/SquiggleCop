@@ -74,6 +74,10 @@ dotnet_code_quality_unused_parameters = all:suggestion
 # Suppression preferences
 dotnet_remove_unnecessary_suppression_exclusions = none
 
+# TODO comments
+dotnet_diagnostic.S1135.severity = suggestion
+dotnet_diagnostic.MA0026.severity = suggestion
+
 #### C# Coding Conventions ####
 [*.cs]
 
@@ -364,4 +368,3 @@ dotnet_naming_style.s_camelcase.required_prefix = s_
 dotnet_naming_style.s_camelcase.required_suffix = 
 dotnet_naming_style.s_camelcase.word_separator = 
 dotnet_naming_style.s_camelcase.capitalization = camel_case
-

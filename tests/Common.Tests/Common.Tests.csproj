@@ -2,9 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>SquiggleCop.Common.Tests</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+
+  <ItemGroup Label="Test data">
+    <None Remove="TestData\Log.v1.sarif" />
+    <EmbeddedResource Include="TestData\Log.v1.sarif" />
+    <None Remove="TestData\Log.v2.sarif" />
+    <EmbeddedResource Include="TestData\Log.v2.sarif" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(RepoRoot)/src/Common/Common.csproj" />
+  </ItemGroup>
 
 </Project>

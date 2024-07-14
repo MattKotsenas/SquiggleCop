@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>SquiggleCop.Common</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sarif.Sdk" />
+  </ItemGroup>
 
 </Project>
