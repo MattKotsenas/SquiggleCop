@@ -1,33 +1,49 @@
 using Microsoft.CodeAnalysis.Sarif;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SquiggleCop.Common;
 
+/// <summary>
+/// Parses SARIF logs to extract the diagnostic configurations.
+/// </summary>
 public class SarifParser
 {
-    // TODO: Note that the stream is borrowed here and won't be closed
+    /// <summary>
+    /// Parses the SARIF log from the given stream and returns the diagnostic configurations.
+    /// </summary>
+    /// <param name="stream">
+    /// A <paramref name="stream"/> that contains the SARIF log.
+    /// </param>
+    /// <returns>
+    /// A collection of <see cref="DiagnosticConfig"/> objects that represent the diagnostic configurations.
+    /// </returns>
+    /// <remarks>
+    /// The <paramref name="stream"/> is borrowed and will not be closed / disposed.
+    /// </remarks>
+    /// <exception cref="InvalidDataException">
+    /// Throws an <see cref="InvalidDataException"/> if the SARIF log cannot be parsed.
+    /// </exception>
 
     public async Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+        if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
+        if (!stream.CanSeek) { throw new ArgumentException("Stream must be seekable", nameof(stream)); }
+
+        SarifLog log;
         try
         {
             // TODO: Should we use deferred loading?
-            SarifLog log = SarifLog.Load(stream, deferred: false);
-
-            // TODO: Assert minimum version of compiler
-
-            return log.Runs.SelectMany(ParseRun).ToList();
+            log = SarifLog.Load(stream, deferred: false);
         }
-        catch (JsonSerializationException e)
+        catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON", StringComparison.Ordinal))
         {
-            // TODO: Find stream-compatible way to test for SARIF v1
-            // if (await IsVersion1FileAsync(path).ConfigureAwait(false))
-            // {
-            //     throw new InvalidDataException($"File '{path}' appears to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
-            // }
-
-            throw new InvalidDataException($"Unable to parse SARIF log. See inner exception for details", e);
+            throw new InvalidDataException($"Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
+
+        // TODO: Assert minimum version of compiler
+        return log.Runs.SelectMany(ParseRun).ToList();
     }
 
     private IEnumerable<DiagnosticConfig> ParseRun(Run run)
@@ -56,21 +72,5 @@ public class SarifParser
                 isEnabledByDefault: defaultConfiguration.Enabled,
                 effectiveSeverities: effectiveSeverities);
         }
-    }
-
-    private async Task<bool> IsVersion1FileAsync(string path)
-    {
-        using var sr = new StreamReader(path);
-
-        string? line;
-        while ((line = await sr.ReadLineAsync().ConfigureAwait(false)) is not null)
-        {
-            if (line.Contains("http://json.schemastore.org/sarif-1.0.0", StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

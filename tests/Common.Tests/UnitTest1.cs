@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace SquiggleCop.Common.Tests;
 
 public class UnitTest1
