@@ -1,0 +1,90 @@
+name: Main build
+
+on:
+  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  merge_group:
+    branches:
+      - main
+
+  workflow_call: # Allow to be called from the release workflow
+
+permissions:
+  packages: read
+  contents: read
+  actions: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-2022, ubuntu-22.04]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: ./global.json
+
+    - name: NuGet Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release /bl:./artifacts/logs/release/build.release.binlog
+
+    - name: Test
+      run: dotnet test --no-build --configuration Release --settings ./eng/targets/tests/test.runsettings
+
+    - name: Upload *.received.* files
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: verify-test-results
+        path: |
+          **/*.received.*
+
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: .NET Test Reports (${{ matrix.os }})
+        path: "artifacts/TestResults/**/*.trx"
+        if-no-files-found: error
+
+    - name: Upload Code Coverage Report
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: .NET Code Coverage Reports (${{ matrix.os }})
+        path: "artifacts/TestResults/coverage/**"
+
+    - name: Publish coverage summary to GitHub
+      run: cat artifacts/TestResults/coverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      shell: bash
+
+    - name: Upload binlogs
+      uses: actions/upload-artifact@v4
+      with:
+        name: binlogs-${{ matrix.os }}
+        path: ./artifacts/logs
+        if-no-files-found: error
+
+    # TODO: Add this back once a package is generated
+    # - name: Upload packages
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: packages-${{ matrix.os }}
+    #     path: |
+    #       ./artifacts/package
+    #     if-no-files-found: error

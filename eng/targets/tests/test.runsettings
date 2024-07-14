@@ -17,7 +17,7 @@
                   TODO: Consider using a "Just my code"-esque tool to automatically include all project references.
                   Discuss in https://github.com/microsoft/codecoverage.
                 -->
-                <ModulePath>.*Moq\.Analyzers\.dll$</ModulePath>
+                <ModulePath>.*[/\\]SquiggleCop[^/\\]*\.dll$</ModulePath>
               </Include>
             </ModulePaths>
           </CodeCoverage>
