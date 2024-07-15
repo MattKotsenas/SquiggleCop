@@ -14,12 +14,7 @@ internal static class SarifExtensions
         ArgumentNullException.ThrowIfNull(bag);
         ArgumentNullException.ThrowIfNull(name);
 
-        if (bag.TryGetProperty(name, out T value))
-        {
-            return value;
-        }
-
-        return defaultValue;
+        return bag.TryGetProperty(name, out T value) ? value : defaultValue;
     }
 
     public static string GetTitle(this ReportingDescriptor rule)
@@ -30,37 +25,24 @@ internal static class SarifExtensions
 
         // Normalize the title of rules that have multiple possible names.
         // Remove this when https://github.com/dotnet/roslyn/issues/73070 is fixed.
-        switch (rule.Id)
+        return rule.Id switch
         {
-            case "IDE0053":
-                return "Use expression body for lambdas";
-            case "IDE0073":
-                return "Require file header";
-            default:
-                return rule.ShortDescription.TextOrDefault(string.Empty);
-        }
+            "IDE0053" => "Use expression body for lambdas",
+            "IDE0073" => "Require file header",
+            _ => rule.ShortDescription.TextOrDefault(string.Empty),
+        };
     }
 
     public static string TextOrDefault(this MultiformatMessageString? message, string defaultValue)
     {
-        if (message?.Text is not null)
-        {
-            return message.Text;
-        }
-
-        return defaultValue;
+        return message?.Text ?? defaultValue;
     }
 
     public static IReadOnlyCollection<ReportingDescriptor> GetRules(this Run run)
     {
         ArgumentNullException.ThrowIfNull(run);
 
-        if (run.Tool?.Driver?.Rules is null)
-        {
-            return Array.Empty<ReportingDescriptor>();
-        }
-
-        return run.Tool.Driver.Rules.ToList();
+        return [.. run.Tool?.Driver?.Rules ?? []];
     }
 
     public static IReadOnlyDictionary<string, List<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
@@ -87,12 +69,7 @@ internal static class SarifExtensions
     {
         ArgumentNullException.ThrowIfNull(rc);
 
-        if (!rc.Enabled)
-        {
-            return FailureLevel.None;
-        }
-
-        return rc.Level;
+        return !rc.Enabled ? FailureLevel.None : rc.Level;
     }
 
     public static bool IsCSharpCompiler(this ToolComponent? tool)

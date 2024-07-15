@@ -26,8 +26,7 @@ public class SarifParser
     /// <exception cref="InvalidDataException">
     /// Throws an <see cref="InvalidDataException"/> if the SARIF log cannot be parsed.
     /// </exception>
-
-    public async Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
+    public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
         if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
@@ -41,15 +40,15 @@ public class SarifParser
         }
         catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON", StringComparison.Ordinal))
         {
-            throw new InvalidDataException($"Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
+            throw new InvalidDataException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
 
-        return log.Runs.SelectMany(ParseRun).ToList();
+        return Task.FromResult<IReadOnlyCollection<DiagnosticConfig>>([.. log.Runs.SelectMany(ParseRun)]);
     }
 
     private IEnumerable<DiagnosticConfig> ParseRun(Run run)
     {
-        ToolComponent? compiler = run?.Tool.Driver;
+        ToolComponent? compiler = run.Tool?.Driver;
 
         if (!compiler.IsCSharpCompiler())
         {
