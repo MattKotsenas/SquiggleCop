@@ -6,6 +6,10 @@
 # Ignore sln files in favor of Traversal projects
 *.sln
 
+# Verify snapshots
+*.received.*
+*.received/
+
 # User-specific files
 *.rsuser
 *.suo
