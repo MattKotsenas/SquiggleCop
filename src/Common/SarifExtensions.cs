@@ -54,24 +54,17 @@ internal static class SarifExtensions
         return [.. run.Tool?.Driver?.Rules ?? []];
     }
 
-    public static IReadOnlyDictionary<string, List<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
+    public static IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
     {
         ArgumentNullException.ThrowIfNull(run);
 
-        // TODO: Use ConfigurationOverrides type instead
+        IList<Invocation> invocations = run.Invocations ?? [];
 
-        StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
-
-        if (run.Invocations is null)
-        {
-            return new Dictionary<string, List<ConfigurationOverride>>(stringComparer);
-        }
-
-        return run.Invocations
+        return invocations
             .Where(i => i.RuleConfigurationOverrides is not null)
             .SelectMany(i => i.RuleConfigurationOverrides)
-            .GroupBy(configOverride => configOverride.Descriptor.Id, stringComparer)
-            .ToDictionary(group => group.Key, group => group.ToList(), stringComparer);
+            .GroupBy(configOverride => configOverride.Descriptor.Id, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.ToList() as IReadOnlyCollection<ConfigurationOverride>, StringComparer.OrdinalIgnoreCase);
     }
 
     public static FailureLevel GetEffectiveSeverity(this ReportingConfiguration rc)

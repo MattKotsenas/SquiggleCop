@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis.Sarif;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace SquiggleCop.Common;
 
@@ -65,7 +64,7 @@ public class SarifParser
         }
 
         IReadOnlyCollection<ReportingDescriptor> rules = run.GetRules();
-        IReadOnlyDictionary<string, List<ConfigurationOverride>> configurationOverrides = run.GetConfigurationOverrides();
+        IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> configurationOverrides = run.GetConfigurationOverrides();
 
         foreach (ReportingDescriptor rule in rules)
         {
@@ -74,7 +73,7 @@ public class SarifParser
             string defaultSeverity = defaultConfiguration.Level.ToString();
             string[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToString()];
 
-            if (configurationOverrides.TryGetValue(rule.Id, out List<ConfigurationOverride>? co))
+            if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
             {
                 ReportingConfiguration[] rcs = co.Select(c => c.Configuration.OrDefault()).ToArray();
                 effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToString()).ToArray();
