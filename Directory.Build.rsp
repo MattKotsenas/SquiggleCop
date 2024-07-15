@@ -1,0 +1,7 @@
+# Opt-in to improved MSBuild scheduling.
+# See https://github.com/dotnet/msbuild/blob/main/documentation/specs/static-graph.md
+-graphBuild
+
+# Because we're on Traversal projects (dirs.proj), ignore any .sln file a dev may have left behind
+# (because they are generated and .gitignored and thus may be stale).
+-ignoreProjectExtensions:.sln
