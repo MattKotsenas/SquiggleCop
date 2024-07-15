@@ -35,8 +35,7 @@ public class SarifParser
         SarifLog log;
         try
         {
-            // TODO: Should we use deferred loading?
-            log = SarifLog.Load(stream, deferred: false);
+            log = SarifLog.Load(stream, deferred: true);
         }
         catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON", StringComparison.Ordinal))
         {
