@@ -3431,7 +3431,7 @@
   },
   {
     Id: IDE0053,
-    Title: Use expression body for lambdas,
+    Title: Use expression body for lambda expression,
     Category: Style,
     DefaultSeverity: Note,
     IsEnabledByDefault: true,
@@ -3601,7 +3601,7 @@
   },
   {
     Id: IDE0073,
-    Title: Require file header,
+    Title: The file header does not match the required text,
     Category: Style,
     DefaultSeverity: Note,
     IsEnabledByDefault: true,

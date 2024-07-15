@@ -4,6 +4,9 @@ namespace SquiggleCop.Common;
 
 internal static class SarifExtensions
 {
+    // Fist version that has the fix for https://github.com/dotnet/roslyn/issues/73070.
+    private static readonly Version Roslyn73070FixedVersion = new(4, 10, 0);
+
     public static T OrDefault<T>(this T? value) where T : ISarifNode, new()
     {
         return value ?? new T();
@@ -17,20 +20,26 @@ internal static class SarifExtensions
         return bag.TryGetProperty(name, out T value) ? value : defaultValue;
     }
 
-    public static string GetTitle(this ReportingDescriptor rule)
+    public static string GetTitle(this ReportingDescriptor rule, Version compilerVersion)
     {
         ArgumentNullException.ThrowIfNull(rule);
 
-        // TODO: Only run this if the compiler version is affected
-
-        // Normalize the title of rules that have multiple possible names.
-        // Remove this when https://github.com/dotnet/roslyn/issues/73070 is fixed.
-        return rule.Id switch
+        if (compilerVersion < Roslyn73070FixedVersion)
         {
-            "IDE0053" => "Use expression body for lambdas",
-            "IDE0073" => "Require file header",
-            _ => rule.ShortDescription.TextOrDefault(string.Empty),
-        };
+            // Normalize the title of rules that have multiple possible names.
+            // Remove this when https://github.com/dotnet/roslyn/issues/73070 is fixed.
+            if (string.Equals(rule.Id, "IDE0053", StringComparison.Ordinal))
+            {
+                return "Use expression body for lambdas";
+            }
+
+            if (string.Equals("IDE0073", rule.Id, StringComparison.Ordinal))
+            {
+                return "Require file header";
+            }
+        }
+
+        return rule.ShortDescription.TextOrDefault(string.Empty);
     }
 
     public static string TextOrDefault(this MultiformatMessageString? message, string defaultValue)
@@ -70,10 +79,5 @@ internal static class SarifExtensions
         ArgumentNullException.ThrowIfNull(rc);
 
         return !rc.Enabled ? FailureLevel.None : rc.Level;
-    }
-
-    public static bool IsCSharpCompiler(this ToolComponent? tool)
-    {
-        return string.Equals(tool?.Name, "Microsoft (R) Visual C# Compiler", StringComparison.Ordinal);
     }
 }

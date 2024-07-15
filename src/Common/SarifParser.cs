@@ -55,7 +55,7 @@ public class SarifParser
             yield break;
         }
 
-        if (!Version.TryParse(compiler?.SemanticVersion, out Version? version))
+        if (!compiler.TryGetVersion(out Version? version))
         {
             throw new InvalidDataException("Unable to parse compiler version. Ensure you are using SDK 8.0.100 or later.");
         }
@@ -83,7 +83,7 @@ public class SarifParser
 
             yield return new DiagnosticConfig(
                 id: rule.Id,
-                title: rule.GetTitle(),
+                title: rule.GetTitle(version),
                 category: rule.GetPropertyOrDefault("category", string.Empty),
                 defaultSeverity: defaultSeverity,
                 isEnabledByDefault: defaultConfiguration.Enabled,
