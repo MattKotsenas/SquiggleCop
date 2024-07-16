@@ -14,15 +14,15 @@ internal static class SarifExtensions
 
     public static T GetPropertyOrDefault<T>(this IPropertyBagHolder bag, string name, T defaultValue)
     {
-        ArgumentNullException.ThrowIfNull(bag);
-        ArgumentNullException.ThrowIfNull(name);
+        if (bag is null) { throw new ArgumentNullException(nameof(bag)); }
+        if (name is null) { throw new ArgumentNullException(nameof(name)); }
 
         return bag.TryGetProperty(name, out T value) ? value : defaultValue;
     }
 
     public static string GetTitle(this ReportingDescriptor rule, Version compilerVersion)
     {
-        ArgumentNullException.ThrowIfNull(rule);
+        if (rule is null) { throw new ArgumentNullException(nameof(rule)); }
 
         if (compilerVersion < Roslyn73070FixedVersion)
         {
@@ -49,14 +49,14 @@ internal static class SarifExtensions
 
     public static IReadOnlyCollection<ReportingDescriptor> GetRules(this Run run)
     {
-        ArgumentNullException.ThrowIfNull(run);
+        if (run is null) { throw new ArgumentNullException(nameof(run)); }
 
         return [.. run.Tool?.Driver?.Rules ?? []];
     }
 
     public static IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
     {
-        ArgumentNullException.ThrowIfNull(run);
+        if (run is null) { throw new ArgumentNullException(nameof(run)); }
 
         IList<Invocation> invocations = run.Invocations ?? [];
 
@@ -69,7 +69,7 @@ internal static class SarifExtensions
 
     public static FailureLevel GetEffectiveSeverity(this ReportingConfiguration rc)
     {
-        ArgumentNullException.ThrowIfNull(rc);
+        if (rc is null) { throw new ArgumentNullException(nameof(rc)); }
 
         return !rc.Enabled ? FailureLevel.None : rc.Level;
     }

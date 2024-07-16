@@ -27,7 +27,7 @@ public class SarifParser
     /// </exception>
     public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
+        if (stream is null) { throw new ArgumentNullException(nameof(stream)); }
         if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
         if (!stream.CanSeek) { throw new ArgumentException("Stream must be seekable", nameof(stream)); }
 
@@ -36,7 +36,7 @@ public class SarifParser
         {
             log = SarifLog.Load(stream, deferred: true);
         }
-        catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON", StringComparison.Ordinal))
+        catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON"))
         {
             throw new InvalidDataException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
