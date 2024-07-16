@@ -2,5 +2,6 @@
   <ItemGroup>
     <ProjectReference Include="src/Common/Common.csproj" />
     <ProjectReference Include="tests/Common.Tests/Common.Tests.csproj" />
+    <ProjectReference Include="tests/Tasks.Tests/Tasks.Tests.csproj" />
   </ItemGroup>
 </Project>
