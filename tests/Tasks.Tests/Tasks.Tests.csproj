@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="$(RepoRoot)/src/Tasks/Tasks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MSBuild.ProjectCreation" />
   </ItemGroup>
 

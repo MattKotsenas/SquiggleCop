@@ -18,8 +18,6 @@
     <EmbeddedResource Include="TestData\Log.old.v2.sarif" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(RepoRoot)/src/Common/Common.csproj" />
-  </ItemGroup>
+  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
 
 </Project>

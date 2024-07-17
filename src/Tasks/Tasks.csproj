@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <RootNamespace>SquiggleCop.Tasks</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+  </PropertyGroup>
+
+  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
+
+</Project>

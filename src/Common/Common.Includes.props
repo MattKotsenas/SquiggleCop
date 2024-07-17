@@ -1,0 +1,21 @@
+<Project>
+  <!-- This file holds the common properties. This is effectively a .projitems, but without the ceremony. -->
+  <ItemGroup Label="Shared">
+    <Compile Include="$(MSBuildThisFileDirectory)/DiagnosticConfig.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/SarifExtensions.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/SarifParser.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/ToolComponentExtensions.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sarif.Sdk" />
+  </ItemGroup>
+</Project>

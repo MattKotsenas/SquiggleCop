@@ -1,14 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.Build.NoTargets">
+
+  <!--
+    NOTE: This is a NoTargets project to allow for building of the common SARIF components.
+    This project is not intended to be referenced directly. Instead, Import the Common.Includes.props
+    file in your project file.
+
+    This is effectively a .shproj, but without the ceremony.
+  -->
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>SquiggleCop.Common</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Sarif.Sdk" />
-  </ItemGroup>
+  <PropertyGroup Label="Shared project settings">
+    <!-- Disable default behavior so we rely on the included props -->
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <ShowCommonFiles>true</ShowCommonFiles>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)/Common.Includes.props" />
 
 </Project>
