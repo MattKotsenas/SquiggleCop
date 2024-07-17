@@ -12,6 +12,7 @@
     <Exec
       Condition="'$(RepositoryBranch)' == ''"
       ConsoleToMSBuild="true"
+      StandardOutputImportance="Low"
       Command="git rev-parse --abbrev-ref HEAD">
         <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryBranch" />
     </Exec>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,11 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(RepoRoot)/src/Tasks/Tasks.csproj" />
+    <ProjectReference Include="$(RepoRoot)/src/Tasks/Tasks.csproj" AddPackageAsOutput="true" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GetPackFromProject" />
     <PackageReference Include="MSBuild.ProjectCreation" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" PrivateAssets="All" ExcludeAssets="Runtime" VersionOverride="17.9.5" />
   </ItemGroup>
 
 </Project>

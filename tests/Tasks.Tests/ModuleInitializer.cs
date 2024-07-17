@@ -11,4 +11,10 @@ internal static class ModuleInitializer
     {
         MSBuildAssemblyResolver.Register();
     }
+
+    [ModuleInitializer]
+    public static void InitializeVerify()
+    {
+        VerifyNupkg.Initialize();
+    }
 }

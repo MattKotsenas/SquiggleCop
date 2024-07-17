@@ -8,11 +8,13 @@
   <Import Project="eng/targets/versioning/Packages.props" />
   <Import Project="eng/targets/tests/Packages.props" />
   <Import Project="eng/targets/codeanalysis/Packages.props" />
+
   <ItemGroup Label="Public APIs">
     <!--
       These items impact our compatibility with SDK versions, so follow
       to strike a balance between compatibility and modernity.
     -->
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="GetPackFromProject" Version="1.0.6" />

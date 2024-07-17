@@ -1,0 +1,43 @@
+﻿/
+|-- README.md
+|-- SquiggleCop.Tasks.nuspec
+|-- build
+|   |-- SquiggleCop.Tasks.props
+|   |-- SquiggleCop.Tasks.targets
+|-- buildTransitive
+|   |-- SquiggleCop.Tasks.props
+|   |-- SquiggleCop.Tasks.targets
+|-- tasks
+|   |-- net472
+|   |   |-- Dia2Lib.dll
+|   |   |-- Microsoft.Diagnostics.FastSerialization.dll
+|   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
+|   |   |-- Newtonsoft.Json.dll
+|   |   |-- Sarif.dll
+|   |   |-- SquiggleCop.Tasks.deps.json
+|   |   |-- SquiggleCop.Tasks.dll
+|   |   |-- SquiggleCop.Tasks.xml
+|   |   |-- System.Buffers.dll
+|   |   |-- System.Collections.Immutable.dll
+|   |   |-- System.Memory.dll
+|   |   |-- System.Numerics.Vectors.dll
+|   |   |-- System.Runtime.CompilerServices.Unsafe.dll
+|   |   |-- System.Text.Encoding.CodePages.dll
+|   |   |-- TraceReloggerLib.dll
+|   |-- net6.0
+|   |   |-- Dia2Lib.dll
+|   |   |-- Microsoft.Diagnostics.FastSerialization.dll
+|   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
+|   |   |-- Newtonsoft.Json.dll
+|   |   |-- Sarif.dll
+|   |   |-- SquiggleCop.Tasks.deps.json
+|   |   |-- SquiggleCop.Tasks.dll
+|   |   |-- SquiggleCop.Tasks.xml
+|   |   |-- System.Collections.Immutable.dll
+|   |   |-- System.Text.Encoding.CodePages.dll
+|   |   |-- TraceReloggerLib.dll
+|   |   |-- runtimes
+|   |   |   |-- win
+|   |   |   |   |-- lib
+|   |   |   |   |   |-- net6.0
+|   |   |   |   |   |   |-- System.Text.Encoding.CodePages.dll

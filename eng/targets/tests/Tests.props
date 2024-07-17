@@ -9,6 +9,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Xunit.Combinatorial" />
+    <PackageReference Include="Verify.Nupkg" />
     <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="FluentAssertions" />
   </ItemGroup>
