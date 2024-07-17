@@ -9,4 +9,8 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MSBuild.ProjectCreation" />
+  </ItemGroup>
+
 </Project>
