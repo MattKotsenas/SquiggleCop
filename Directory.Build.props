@@ -9,4 +9,5 @@
   <Import Project="eng/targets/versioning/Versioning.props" />
   <Import Project="eng/targets/tests/Tests.props" />
   <Import Project="eng/targets/codeanalysis/CodeAnalysis.props" />
+  <Import Project="eng/targets/traversal/Traversal.props" />
 </Project>

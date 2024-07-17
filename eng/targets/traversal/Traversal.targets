@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup Condition="'$(IsTraversal)' == 'true'">
+    <!--
+      Turn folders on if the project hasn't customized the value. This avoids name collisions during root builds where
+      several components / services use the same project names.
+    -->
+    <SlnGenFolders Condition="'$(SlnGenFolders)' == ''">true</SlnGenFolders>
+
+    <!--
+      If the project hasn't customized its name, use the name of the parent folder. This avoids every Visual Studio
+      window being named "dirs".
+
+      We check the property twice to handle the unlikely situation where the project is at the root of a drive, and thus
+      the folder would otherwise be ''.
+
+      Adding this feature to upstream Traversal projects is tracked at https://github.com/microsoft/MSBuildSdks/pull/559.
+      Remove this functionality if / when that's accepted.
+    -->
+    <SlnGenProjectName Condition="'$(SlnGenProjectName)' == ''">$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectFullPath)))))</SlnGenProjectName>
+    <SlnGenProjectName Condition="'$(SlnGenProjectName)' == ''">$(MSBuildProjectName)</SlnGenProjectName>
+  </PropertyGroup>
+</Project>
