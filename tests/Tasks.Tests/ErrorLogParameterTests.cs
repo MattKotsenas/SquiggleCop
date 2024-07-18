@@ -5,33 +5,32 @@ namespace SquiggleCop.Common.Tests;
 public class ErrorLogParameterTests : TestBase
 {
     [Fact]
-    public void NoErrorLogReportsWarning()
+    public async Task NoErrorLogReportsWarning()
     {
         ProjectCreator.Templates.SimpleBuild()
-            .Save(Path.Combine(TestRootPath, "project.msbuildproj"))
-            .TryBuild(out bool result, out BuildOutput output);
+            .Save(Path.Combine(TestRootPath, "project.csproj"))
+            .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        // TODO: Implement
-        // await Verify(output.WarningEvents);
-        // output.WarningEvents.Should().ContainSingle(e =>
-        //     e != null && e.Message != null && e.Message.Contains("ErrorLog property not set"));
+        await Verify(output.WarningEvents.ToBuildLogMessages());
     }
 
     [Fact]
-    public void MissingErrorLogReportsWarning()
+    public async Task MissingErrorLogReportsWarning()
     {
+        const string sarifFileName = "sarif.log";
+
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", "sarif.log,version=2.1")
-            .Save(Path.Combine(TestRootPath, "project.msbuildproj"))
-            .TryBuild(out bool result, out BuildOutput output);
+                .Property("ErrorLog", $"{sarifFileName},version=2.1")
+            .Target(name: "_DeleteSarifLogBeforeSquiggleCopRuns", beforeTargets: "AfterCompile")
+                .TaskMessage("Deleting ErrorLog.")
+                .Task(name: "Delete", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "Files", sarifFileName } })
+            .Save(Path.Combine(TestRootPath, "project.csproj"))
+            .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        // TODO: Implement
-        // await Verify(output.WarningEvents);
-        // output.WarningEvents.Should().ContainSingle(e =>
-        //     e != null && e.Message != null && e.Message.Contains("SARIF log file not found"));
+        await Verify(output.WarningEvents.ToBuildLogMessages());
     }
 
     [Theory]
@@ -45,8 +44,8 @@ public class ErrorLogParameterTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .Property("ErrorLog", file)
-            .Save(Path.Combine(TestRootPath, "project.msbuildproj"))
-            .TryBuild(out bool result, out BuildOutput output);
+            .Save(Path.Combine(TestRootPath, "project.csproj"))
+            .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
         // TODO: Implement
@@ -63,8 +62,8 @@ public class ErrorLogParameterTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .Property("ErrorLog", $"sarif.log,version={version}")
-            .Save(Path.Combine(TestRootPath, "project.msbuildproj"))
-            .TryBuild(out bool result, out BuildOutput output);
+            .Save(Path.Combine(TestRootPath, "project.csproj"))
+            .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
         output.WarningEvents.Should().BeEmpty();

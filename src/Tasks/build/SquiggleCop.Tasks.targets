@@ -1,2 +1,7 @@
 <Project>
+  <!-- TODO: Wire up inputs / outputs / incremental build -->
+  <Target Name="_RunSquiggleCop" BeforeTargets="AfterBuild">
+    <SquiggleCop
+      ErrorLog="$(ErrorLog)" />
+  </Target>
 </Project>

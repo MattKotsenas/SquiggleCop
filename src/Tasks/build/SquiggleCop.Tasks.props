@@ -6,5 +6,5 @@
     <TaskAssembly>$(MSBuildThisFileDirectory)../tasks/$(TaskFolder)/SquiggleCop.Tasks.dll</TaskAssembly>
   </PropertyGroup>
 
-  <!--<UsingTask TaskName="{{TaskName}}" AssemblyFile="$(TaskAssembly)" />-->
+  <UsingTask TaskName="SquiggleCop.Tasks.SquiggleCop" AssemblyFile="$(TaskAssembly)" />
 </Project>
