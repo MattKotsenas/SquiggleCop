@@ -36,7 +36,7 @@ public class ErrorLogParameterTests : TestBase
     [Theory]
     [InlineData(null)]
     [InlineData("1")]
-    public void V1ErrorLogReportsWarning(string? version)
+    public async Task V1ErrorLogReportsWarning(string? version)
     {
         string file = "sarif.log";
         file += version != null ? $",version={version}" : string.Empty;
@@ -48,10 +48,8 @@ public class ErrorLogParameterTests : TestBase
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        // TODO: Implement
-        // await Verify(output.WarningEvents);
-        // output.WarningEvents.Should().ContainSingle(e =>
-        //     e != null && e.Message != null && e.Message.Contains("SARIF log is in v1 format"));
+        await Verify(output.WarningEvents.ToBuildLogMessages())
+            .UseParameters(version);
     }
 
     [Theory]

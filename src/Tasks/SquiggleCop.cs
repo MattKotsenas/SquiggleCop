@@ -1,4 +1,6 @@
-﻿using Task = Microsoft.Build.Utilities.Task;
+﻿using SquiggleCop.Common;
+
+using Task = Microsoft.Build.Utilities.Task;
 
 namespace SquiggleCop.Tasks;
 
@@ -11,6 +13,9 @@ public class SquiggleCop : Task
     //   - SQ1XXX: SARIF file parsing
     private static readonly string LogNotSpecified = "SQ1000";
     private static readonly string LogNotFound = "SQ1001";
+    private static readonly string LogV1Format = "SQ1002";
+
+    private readonly SarifParser _parser = new();
 
     /// <summary>
     /// The SARIF log file to create a baseline from. Must be in SARIF v2.1 format.
@@ -20,7 +25,7 @@ public class SquiggleCop : Task
     /// <summary>
     /// Create a baseline of Roslyn diagnostics from a given SARIF log file.
     /// </summary>
-    /// <returns>true, if successful</returns>
+    /// <returns><see langword="true" />, if successful</returns>
     public override bool Execute()
     {
         ErrorLog = TrimSarifVersion(ErrorLog);
@@ -28,13 +33,26 @@ public class SquiggleCop : Task
         if (ErrorLog is null)
         {
             LogWarning(warningCode: LogNotSpecified, "ErrorLog property not specified");
-        }
-        else if (!File.Exists(ErrorLog))
-        {
-            LogWarning(warningCode: LogNotFound, "SARIF log file not found: {0}", ErrorLog);
+            return true;
         }
 
-        return true;
+        if (!File.Exists(ErrorLog))
+        {
+            LogWarning(warningCode: LogNotFound, "SARIF log file not found: {0}", ErrorLog);
+            return true;
+        }
+
+        try
+        {
+            using Stream stream = File.OpenRead(ErrorLog!);
+            _ = _parser.Parse(stream);
+            return true;
+        }
+        catch (UnsupportedVersionException)
+        {
+            LogWarning(warningCode: LogV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
+            return true;
+        }
     }
 
     private void LogWarning(string warningCode, string message, params object[] messageArgs)

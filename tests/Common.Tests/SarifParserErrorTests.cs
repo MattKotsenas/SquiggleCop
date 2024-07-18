@@ -12,7 +12,7 @@ public class SarifParserErrorTests
 
         await _parser.Invoking(p => p.ParseAsync(data))
             .Should()
-            .ThrowAsync<InvalidDataException>()
+            .ThrowAsync<UnsupportedVersionException>()
             .Where(e => e.Message.Contains("SARIF v1"));
     }
 
@@ -23,7 +23,7 @@ public class SarifParserErrorTests
 
         await _parser.Invoking(p => p.ParseAsync(data))
             .Should()
-            .ThrowAsync<InvalidDataException>()
+            .ThrowAsync<UnsupportedVersionException>()
             .Where(e => e.Message.Contains("SDK 8.0.100 or later"));
     }
 }

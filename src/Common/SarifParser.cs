@@ -23,9 +23,9 @@ public class SarifParser
     /// The <paramref name="stream"/> is borrowed and will not be closed / disposed.
     /// </remarks>
     /// <exception cref="InvalidDataException">
-    /// Throws an <see cref="InvalidDataException"/> if the SARIF log cannot be parsed.
+    /// Throws an <see cref="UnsupportedVersionException"/> if the SARIF log cannot be parsed.
     /// </exception>
-    public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
+    public IReadOnlyCollection<DiagnosticConfig> Parse(Stream stream)
     {
         if (stream is null) { throw new ArgumentNullException(nameof(stream)); }
         if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
@@ -38,10 +38,17 @@ public class SarifParser
         }
         catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON"))
         {
-            throw new InvalidDataException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
+            throw new UnsupportedVersionException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
 
-        return Task.FromResult<IReadOnlyCollection<DiagnosticConfig>>([.. log.Runs.SelectMany(ParseRun)]);
+        return [.. log.Runs.SelectMany(ParseRun)];
+    }
+
+    /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0042:Do not use blocking calls in an async method", Justification = "This is provided for symmetry, as I'm assuming eventually the API will become actually async.")]
+    public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
+    {
+        return Task.FromResult(Parse(stream));
     }
 
     private IEnumerable<DiagnosticConfig> ParseRun(Run run)
@@ -55,12 +62,12 @@ public class SarifParser
 
         if (!compiler.TryGetVersion(out Version? version))
         {
-            throw new InvalidDataException("Unable to parse compiler version. Ensure you are using SDK 8.0.100 or later.");
+            throw new UnsupportedVersionException("Unable to parse compiler version. Ensure you are using SDK 8.0.100 or later.");
         }
 
         if (version < MinimumCompilerVersion)
         {
-            throw new InvalidDataException($"Compiler version '{version}' is less than minimum required version '{MinimumCompilerVersion}'. Ensure you are using SDK 8.0.100 or later.");
+            throw new UnsupportedVersionException($"Compiler version '{version}' is less than minimum required version '{MinimumCompilerVersion}'. Ensure you are using SDK 8.0.100 or later.");
         }
 
         IReadOnlyCollection<ReportingDescriptor> rules = run.GetRules();
