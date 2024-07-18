@@ -12,7 +12,7 @@ public class ErrorLogParameterTests : TestBase
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        await Verify(output.WarningEvents.ToBuildLogMessages());
+        await Verify(output.ToBuildLogMessages());
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class ErrorLogParameterTests : TestBase
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        await Verify(output.WarningEvents.ToBuildLogMessages());
+        await Verify(output.ToBuildLogMessages());
     }
 
     [Theory]
@@ -48,14 +48,14 @@ public class ErrorLogParameterTests : TestBase
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        await Verify(output.WarningEvents.ToBuildLogMessages())
+        await Verify(output.ToBuildLogMessages())
             .UseParameters(version);
     }
 
     [Theory]
     [InlineData("2")]
     [InlineData("2.1")]
-    public void V2ErrorLogNoWarning(string version)
+    public async Task V2ErrorLogNoWarning(string version)
     {
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
@@ -64,6 +64,7 @@ public class ErrorLogParameterTests : TestBase
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         result.Should().BeTrue();
-        output.WarningEvents.Should().BeEmpty();
+        await Verify(output.ToBuildLogMessages())
+            .UseParameters(version);
     }
 }

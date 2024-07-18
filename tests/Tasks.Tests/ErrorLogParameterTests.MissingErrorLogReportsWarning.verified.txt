@@ -1,5 +1,6 @@
 ﻿[
   {
+    Type: Warning,
     Code: SQ1001,
     Message: SARIF log file not found: sarif.log
   }

@@ -1,3 +1,3 @@
 ﻿namespace SquiggleCop.Common.Tests;
 
-internal record class BuildLogMessage(string? Code, string? Message);
+internal record class BuildLogMessage(string Type, string? Code, string? Message);

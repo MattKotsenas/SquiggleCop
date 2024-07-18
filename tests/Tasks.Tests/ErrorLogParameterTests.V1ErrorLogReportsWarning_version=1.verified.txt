@@ -1,5 +1,6 @@
 ﻿[
   {
+    Type: Warning,
     Code: SQ1002,
     Message: SARIF log 'sarif.log' is in v1 format; SquiggleCop requires SARIF v2.1 logs
   }
