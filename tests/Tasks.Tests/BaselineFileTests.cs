@@ -22,13 +22,6 @@ public class BaselineFileTests : TestBase
     {
         DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
-
-        if (autoBaseline.HasValue && !autoBaseline.Value)
-        {
-            // TODO: Implement; when auto is off, do what? Give message to run tool?
-            return;
-        }
-
         const string errorLog = "sarif.log";
 
         ProjectCreator.Templates.SimpleBuild()
@@ -47,7 +40,16 @@ public class BaselineFileTests : TestBase
                 await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
+
+        if (autoBaseline ?? true)
+        {
+            baselineFile.Exists.Should().BeTrue();
+            baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
+        }
+        else
+        {
+            baselineFile.Exists.Should().BeFalse();
+        }
     }
 
     [Theory]
@@ -56,13 +58,6 @@ public class BaselineFileTests : TestBase
     {
         DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
-
-        if (autoBaseline.HasValue && !autoBaseline.Value)
-        {
-            // TODO: Implement; when auto is off, do what? Give message to run tool?
-            return;
-        }
-
         const string errorLog = "sarif.log";
 
         ProjectCreator.Templates.SimpleBuild()
@@ -84,6 +79,7 @@ public class BaselineFileTests : TestBase
                 await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
+        baselineFile.Exists.Should().BeTrue();
         baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
     }
 
@@ -93,13 +89,6 @@ public class BaselineFileTests : TestBase
     {
         DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
-
-        if (autoBaseline.HasValue && !autoBaseline.Value)
-        {
-            // TODO: Implement; when auto is off, do what? Give message to run tool?
-            return;
-        }
-
         const string errorLog = "sarif.log";
 
         ProjectCreator.Templates.SimpleBuild()
@@ -120,6 +109,15 @@ public class BaselineFileTests : TestBase
                 await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
+        baselineFile.Exists.Should().BeTrue();
+
+        if (autoBaseline ?? true)
+        {
+            baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
+        }
+        else
+        {
+            baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
+        }
     }
 }

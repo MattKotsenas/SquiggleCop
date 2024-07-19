@@ -1,0 +1,10 @@
+﻿{
+  BuildLogMessages: [
+    {
+      Type: Warning,
+      Code: SQ2000,
+      Message: Baseline file mismatch: SquiggleCop.Baseline.json
+    }
+  ],
+  BaselineFileContents: 
+}

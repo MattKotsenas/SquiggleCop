@@ -15,9 +15,11 @@ public class SquiggleCop : Task
 {
     // Error code pattern:
     //   - SQ1XXX: SARIF file parsing
-    private static readonly string LogNotSpecified = "SQ1000";
-    private static readonly string LogNotFound = "SQ1001";
-    private static readonly string LogV1Format = "SQ1002";
+    //   - SQ2XXX: Baseline file handling
+    private static readonly string SarifNotSpecified = "SQ1000";
+    private static readonly string SarifNotFound = "SQ1001";
+    private static readonly string SarifV1Format = "SQ1002";
+    private static readonly string BaselineFileMismatch = "SQ2000";
 
     private readonly SarifParser _parser = new();
 
@@ -47,13 +49,13 @@ public class SquiggleCop : Task
 
         if (ErrorLog is null)
         {
-            LogWarning(warningCode: LogNotSpecified, "ErrorLog property not specified");
+            LogWarning(warningCode: SarifNotSpecified, "ErrorLog property not specified");
             return true;
         }
 
         if (!File.Exists(ErrorLog))
         {
-            LogWarning(warningCode: LogNotFound, "SARIF log file not found: {0}", ErrorLog);
+            LogWarning(warningCode: SarifNotFound, "SARIF log file not found: {0}", ErrorLog);
             return true;
         }
 
@@ -63,38 +65,40 @@ public class SquiggleCop : Task
 
             IReadOnlyCollection<DiagnosticConfig> configs = _parser.Parse(stream);
 
-            if (AutoBaseline)
+            // TODO: Rewrite for performance; maybe hash streams?
+
+            // TODO: Use line-by-line comparison to avoid newline handling differences.
+            // If we use binary comparison be sure to document the proper procedure
+            // for .gitattributes (or whatever).
+            //
+            // Also, consider that resetting line endings may result in source control churn.
+
+            string newBaseline = JsonConvert.SerializeObject(configs); // TODO: Pretty print the serialized JSON
+
+            if (AreDifferent(BaselineFile, newBaseline))
             {
-                // TODO: Pretty print the serialized JSON
-                WriteFileIfDifferent(BaselineFile, JsonConvert.SerializeObject(configs));
-            }
-            else
-            {
-                // TODO: Implement this
-                throw new NotImplementedException();
+                if (AutoBaseline)
+                {
+                    File.WriteAllText(BaselineFile, newBaseline);
+                }
+                else
+                {
+                    LogWarning(warningCode: BaselineFileMismatch, "Baseline file mismatch: {0}", BaselineFile);
+                }
             }
 
             return true;
         }
         catch (UnsupportedVersionException)
         {
-            LogWarning(warningCode: LogV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
+            LogWarning(warningCode: SarifV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
             return true;
         }
     }
 
-    private static void WriteFileIfDifferent(string path, string contents)
+    private static bool AreDifferent(string path, string contents)
     {
-        // TODO: Rewrite for performance; maybe hash streams?
-
-        // TODO: Use line-by-line comparison to avoid newline handling differences.
-        // If we use binary comparison be sure to document the proper procedure
-        // for .gitattributes (or whatever).
-
-        if (!File.Exists(path) || !string.Equals(File.ReadAllText(path), contents, StringComparison.Ordinal))
-        {
-            File.WriteAllText(path, contents);
-        }
+        return !File.Exists(path) || !string.Equals(File.ReadAllText(path), contents, StringComparison.Ordinal);
     }
 
     private void LogWarning(string warningCode, string message, params object[] messageArgs)
