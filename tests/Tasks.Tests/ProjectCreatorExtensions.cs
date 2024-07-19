@@ -6,6 +6,14 @@ namespace SquiggleCop.Tasks.Tests;
 
 internal static class ProjectCreatorExtensions
 {
+    public static ProjectCreator TouchFilesTask(this ProjectCreator projectCreator, IReadOnlyCollection<string> paths, bool createIfNeeded = true)
+    {
+        return projectCreator
+            .Task(
+                name: "Touch",
+                parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "Files", string.Join(';', paths) }, { "AlwaysCreate", createIfNeeded.ToString().ToLowerInvariant() } });
+    }
+
     public static ProjectCreator CopyFileTask(this ProjectCreator projectCreator, string sourcePath, string destinationPath)
     {
         return projectCreator

@@ -10,8 +10,6 @@ public class BaselineFileTests : TestBase
         // These are considered "well known file names" inside the tests.
         File.WriteAllText(Path.Combine(TestRootPath, "sample1.log"), TestData.Sample1.Sarif);
         File.WriteAllText(Path.Combine(TestRootPath, "sample1.baseline"), TestData.Sample1.Baseline);
-        File.WriteAllText(Path.Combine(TestRootPath, "sample1.log"), TestData.Sample1.Sarif);
-        File.WriteAllText(Path.Combine(TestRootPath, "sample2.baseline"), TestData.Sample2.Baseline);
     }
 
     // TODO: Implement explicit file support
@@ -43,13 +41,13 @@ public class BaselineFileTests : TestBase
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
-        result.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
                 await File.ReadAllTextAsync(baselineFile.FullName)
         )).UseParameters(autoBaseline, explicitFile);
+        result.Should().BeTrue();
+        baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
     }
 
     [Theory]
@@ -85,20 +83,54 @@ public class BaselineFileTests : TestBase
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
-        result.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
                 await File.ReadAllTextAsync(baselineFile.FullName)
         )).UseParameters(autoBaseline, explicitFile);
+        result.Should().BeTrue();
+        baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
     }
 
     [Theory]
     [CombinatorialData]
-    public void BaselineOutOfDate(bool? autoBaseline, bool explicitFile)
+    public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile)
     {
-        // TODO: Implement; when auto is on, update the file
-        // TODO: Implement; when auto is off, pop Verify? Give message to run tool?
+        DateTime now = DateTime.UtcNow;
+        FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
+
+        if (autoBaseline.HasValue && !autoBaseline.Value)
+        {
+            // TODO: Implement; when auto is off, do what? Give message to run tool?
+            return;
+        }
+
+        const string errorLog = "sarif.log";
+
+        ProjectCreator.Templates.SimpleBuild()
+            .PropertyGroup()
+                .ErrorLog(errorLog, "2.1")
+                .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
+            .UsingRoslynCodeTask("_SetBaselineLastWriteTime",
+                $"""
+                // Set the last write time to a time in the past to simulate the file being up-to-date
+                File.SetLastWriteTimeUtc(@"{baselineFile.FullName}", DateTime.UtcNow.AddDays(-1));
+                """)
+            .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
+                .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
+                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
+                .TaskMessage("Write sample to simulate out-of-date baseline...")
+                .TouchFilesTask([baselineFile.FullName])
+                .Task("_SetBaselineLastWriteTime")
+            .Save(Path.Combine(TestRootPath, "project.csproj"))
+            .TryBuild(restore: true, out bool result, out BuildOutput output);
+
+        await Verify(
+            new BaselineFileResults(
+                output.ToBuildLogMessages(),
+                await File.ReadAllTextAsync(baselineFile.FullName)
+        )).UseParameters(autoBaseline, explicitFile);
+        result.Should().BeTrue();
+        baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
     }
 }
