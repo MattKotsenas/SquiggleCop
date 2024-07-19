@@ -2,7 +2,7 @@
 
 using Microsoft.Build.Utilities.ProjectCreation;
 
-namespace SquiggleCop.Common.Tests;
+namespace SquiggleCop.Tasks.Tests;
 
 public abstract class TestBase : MSBuildTestBase, IDisposable
 {

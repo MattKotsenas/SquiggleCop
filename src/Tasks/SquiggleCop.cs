@@ -1,4 +1,8 @@
-﻿using SquiggleCop.Common;
+﻿using Microsoft.Build.Framework;
+
+using Newtonsoft.Json;
+
+using SquiggleCop.Common;
 
 using Task = Microsoft.Build.Utilities.Task;
 
@@ -23,6 +27,17 @@ public class SquiggleCop : Task
     public string? ErrorLog { get; set; }
 
     /// <summary>
+    /// If <see langword="true"/>, the <see cref="BaselineFile"/> with be automatically created / updated. If <see langword="false"/>, the task will fail if the baseline file already exists.
+    /// </summary>
+    [Required]
+    public bool AutoBaseline { get; set; } = true;
+
+    /// <summary>
+    /// The name of the baseline file.
+    /// </summary>
+    public static string BaselineFile { get; } = "SquiggleCop.Baseline.json";
+
+    /// <summary>
     /// Create a baseline of Roslyn diagnostics from a given SARIF log file.
     /// </summary>
     /// <returns><see langword="true" />, if successful</returns>
@@ -45,7 +60,20 @@ public class SquiggleCop : Task
         try
         {
             using Stream stream = File.OpenRead(ErrorLog!);
-            _ = _parser.Parse(stream);
+
+            IReadOnlyCollection<DiagnosticConfig> configs = _parser.Parse(stream);
+
+            if (AutoBaseline)
+            {
+                // TODO: Pretty print the serialized JSON
+                File.WriteAllText(BaselineFile, JsonConvert.SerializeObject(configs));
+            }
+            else
+            {
+                // TODO: Implement this
+                throw new NotImplementedException();
+            }
+
             return true;
         }
         catch (UnsupportedVersionException)

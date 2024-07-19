@@ -1,6 +1,6 @@
 using Microsoft.Build.Utilities.ProjectCreation;
 
-namespace SquiggleCop.Common.Tests;
+namespace SquiggleCop.Tasks.Tests;
 
 public class ErrorLogParameterTests : TestBase
 {
@@ -24,7 +24,7 @@ public class ErrorLogParameterTests : TestBase
             .PropertyGroup()
                 .Property("ErrorLog", $"{sarifFileName},version=2.1")
             .Target(name: "_DeleteSarifLogBeforeSquiggleCopRuns", beforeTargets: "AfterCompile")
-                .TaskMessage("Deleting ErrorLog.")
+                .TaskMessage("Deleting ErrorLog...")
                 .Task(name: "Delete", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "Files", sarifFileName } })
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
