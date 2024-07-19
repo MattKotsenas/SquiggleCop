@@ -44,7 +44,7 @@ public class BaselineFileTests : TestBase
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await File.ReadAllTextAsync(baselineFile.FullName)
+                await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
         baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
@@ -81,7 +81,7 @@ public class BaselineFileTests : TestBase
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await File.ReadAllTextAsync(baselineFile.FullName)
+                await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
         baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
@@ -117,7 +117,7 @@ public class BaselineFileTests : TestBase
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await File.ReadAllTextAsync(baselineFile.FullName)
+                await baselineFile.ReadAllTextAsyncOrDefault()
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
         baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
