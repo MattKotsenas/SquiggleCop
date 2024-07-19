@@ -22,7 +22,7 @@ public class ErrorLogParameterTests : TestBase
 
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", $"{sarifFileName},version=2.1")
+                .ErrorLog(sarifFileName, "2.1")
             .Target(name: "_DeleteSarifLogBeforeSquiggleCopRuns", beforeTargets: "AfterCompile")
                 .TaskMessage("Deleting ErrorLog...")
                 .Task(name: "Delete", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "Files", sarifFileName } })
@@ -38,12 +38,9 @@ public class ErrorLogParameterTests : TestBase
     [InlineData("1")]
     public async Task V1ErrorLogReportsWarning(string? version)
     {
-        string file = "sarif.log";
-        file += version != null ? $",version={version}" : string.Empty;
-
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", file)
+                .ErrorLog("sarif.log", version)
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
@@ -59,7 +56,7 @@ public class ErrorLogParameterTests : TestBase
     {
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", $"sarif.log,version={version}")
+                .ErrorLog("sarif.log", version)
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 

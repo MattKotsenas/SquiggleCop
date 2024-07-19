@@ -37,7 +37,7 @@ public class BaselineFileTests : TestBase
 
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", $"{errorLog},version=2.1")
+                .ErrorLog(errorLog, "2.1")
                 .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
@@ -71,7 +71,7 @@ public class BaselineFileTests : TestBase
 
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .Property("ErrorLog", $"{errorLog},version=2.1")
+                .ErrorLog(errorLog, "2.1")
                 .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
             .UsingRoslynCodeTask("_SetBaselineLastWriteTime",
                 $"""
