@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-
-using Microsoft.Build.Utilities.ProjectCreation;
+﻿using Microsoft.Build.Utilities.ProjectCreation;
 
 namespace SquiggleCop.Tasks.Tests;
 
@@ -41,7 +39,7 @@ public class BaselineFileTests : TestBase
                 .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .Task(name: "Copy", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", Path.Combine(TestRootPath, "sample1.log") }, { "DestinationFiles", errorLog } })
+                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
@@ -80,9 +78,9 @@ public class BaselineFileTests : TestBase
                 """)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .Task(name: "Copy", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", Path.Combine(TestRootPath, "sample1.log") }, { "DestinationFiles", errorLog } })
+                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
-                .Task(name: "Copy", parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", Path.Combine(TestRootPath, "sample1.baseline") }, { "DestinationFiles", baselineFile.FullName } })
+                .CopyFileTask(Path.Combine(TestRootPath, "sample1.baseline"), baselineFile.FullName)
                 .Task("_SetBaselineLastWriteTime")
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);

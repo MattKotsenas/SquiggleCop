@@ -6,6 +6,14 @@ namespace SquiggleCop.Tasks.Tests;
 
 internal static class ProjectCreatorExtensions
 {
+    public static ProjectCreator CopyFileTask(this ProjectCreator projectCreator, string sourcePath, string destinationPath)
+    {
+        return projectCreator
+            .Task(
+                name: "Copy",
+                parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", sourcePath }, { "DestinationFiles", destinationPath } });
+    }
+
     public static ProjectCreator ErrorLog(this ProjectCreator projectCreator, string file, string? version = null)
     {
         string value = file;
