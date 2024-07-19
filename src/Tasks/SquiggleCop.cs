@@ -66,7 +66,7 @@ public class SquiggleCop : Task
             if (AutoBaseline)
             {
                 // TODO: Pretty print the serialized JSON
-                File.WriteAllText(BaselineFile, JsonConvert.SerializeObject(configs));
+                WriteFileIfDifferent(BaselineFile, JsonConvert.SerializeObject(configs));
             }
             else
             {
@@ -80,6 +80,20 @@ public class SquiggleCop : Task
         {
             LogWarning(warningCode: LogV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
             return true;
+        }
+    }
+
+    private static void WriteFileIfDifferent(string path, string contents)
+    {
+        // TODO: Rewrite for performance; maybe hash streams?
+
+        // TODO: Use line-by-line comparison to avoid newline handling differences.
+        // If we use binary comparison be sure to document the proper procedure
+        // for .gitattributes (or whatever).
+
+        if (!File.Exists(path) || !string.Equals(File.ReadAllText(path), contents, StringComparison.Ordinal))
+        {
+            File.WriteAllText(path, contents);
         }
     }
 
