@@ -27,7 +27,7 @@ public class BaselineFileTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
-                .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
+                .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
@@ -41,7 +41,7 @@ public class BaselineFileTests : TestBase
         )).UseParameters(autoBaseline, explicitFile);
         result.Should().BeTrue();
 
-        if (autoBaseline ?? true)
+        if (autoBaseline ?? false)
         {
             baselineFile.Exists.Should().BeTrue();
             baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
@@ -63,7 +63,7 @@ public class BaselineFileTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
-                .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
+                .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
@@ -94,7 +94,7 @@ public class BaselineFileTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
-                .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
+                .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
@@ -111,7 +111,7 @@ public class BaselineFileTests : TestBase
         result.Should().BeTrue();
         baselineFile.Exists.Should().BeTrue();
 
-        if (autoBaseline ?? true)
+        if (autoBaseline ?? false)
         {
             baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
         }

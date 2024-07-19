@@ -31,6 +31,12 @@ internal static class ProjectCreatorExtensions
                 parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", sourcePath }, { "DestinationFiles", destinationPath } });
     }
 
+    public static ProjectCreator AutoBaseline(this ProjectCreator projectCreator, bool? autoBaseline = null)
+    {
+        return projectCreator
+            .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant());
+    }
+
     public static ProjectCreator ErrorLog(this ProjectCreator projectCreator, string file, string? version = null)
     {
         string value = file;

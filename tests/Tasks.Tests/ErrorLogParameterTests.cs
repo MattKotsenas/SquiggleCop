@@ -57,6 +57,7 @@ public class ErrorLogParameterTests : TestBase
         ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog("sarif.log", version)
+                .AutoBaseline(true)
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 

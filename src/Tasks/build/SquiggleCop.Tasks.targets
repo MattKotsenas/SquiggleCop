@@ -2,8 +2,7 @@
   <!-- TODO: Wire up inputs / outputs / incremental build -->
   <Target Name="_RunSquiggleCop" BeforeTargets="AfterBuild">
     <PropertyGroup>
-      <!-- TODO: What should the default autobaseline behavior be? -->
-      <SquiggleCop_AutoBaseline Condition="'$(SquiggleCop_AutoBaseline)' == ''">true</SquiggleCop_AutoBaseline>
+      <SquiggleCop_AutoBaseline Condition="'$(SquiggleCop_AutoBaseline)' == ''">false</SquiggleCop_AutoBaseline>
     </PropertyGroup>
 
     <SquiggleCop

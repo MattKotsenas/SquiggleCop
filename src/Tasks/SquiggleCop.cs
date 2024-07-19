@@ -29,10 +29,11 @@ public class SquiggleCop : Task
     public string? ErrorLog { get; set; }
 
     /// <summary>
-    /// If <see langword="true"/>, the <see cref="BaselineFile"/> with be automatically created / updated. If <see langword="false"/>, the task will fail if the baseline file already exists.
+    /// If <see langword="true"/>, the <see cref="BaselineFile"/> with be automatically created / updated.
+    /// If <see langword="false"/>, the task will warn if the baseline file already exists.
     /// </summary>
     [Required]
-    public bool AutoBaseline { get; set; } = true;
+    public bool AutoBaseline { get; set; } = false;
 
     /// <summary>
     /// The name of the baseline file.
