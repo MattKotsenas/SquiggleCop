@@ -7,6 +7,7 @@
 
     <SquiggleCop
       ErrorLog="$(ErrorLog)"
-      AutoBaseline="$(SquiggleCop_AutoBaseline)" />
+      AutoBaseline="$(SquiggleCop_AutoBaseline)"
+      AdditionalFiles="@(AdditionalFiles)" />
   </Target>
 </Project>

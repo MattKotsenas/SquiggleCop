@@ -7,6 +7,7 @@ internal static class ProjectCreatorTemplatesExtensions
     public static ProjectCreator SimpleBuild(this ProjectCreatorTemplates templates)
     {
         return templates.SdkCsproj()
-            .ItemPackageReference("SquiggleCop.Tasks", "*");
+            .ItemGroup()
+                .ItemPackageReference("SquiggleCop.Tasks", "*");
     }
 }

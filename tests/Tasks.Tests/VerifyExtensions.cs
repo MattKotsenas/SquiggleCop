@@ -25,4 +25,22 @@ internal static class VerifyExtensions
     {
         return buildOutput.ErrorEvents.ToBuildLogMessages().Concat(buildOutput.WarningEvents.ToBuildLogMessages());
     }
+
+    public static SettingsTask ScrubDirectory(this SettingsTask settings, string directory, string replacement)
+    {
+        string backslash = directory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        string forwardslash = directory.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(backslash, replacement));
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(forwardslash, replacement));
+
+        return settings;
+    }
+
+    public static SettingsTask ScrubPathSeparators(this SettingsTask settings)
+    {
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+
+        return settings;
+    }
 }

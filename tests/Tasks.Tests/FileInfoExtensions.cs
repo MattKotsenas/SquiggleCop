@@ -12,5 +12,9 @@ internal static class FileInfoExtensions
         {
             return defaultValue;
         }
+        catch (DirectoryNotFoundException)
+        {
+            return defaultValue;
+        }
     }
 }

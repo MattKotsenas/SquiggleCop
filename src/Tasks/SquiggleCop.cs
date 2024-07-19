@@ -20,6 +20,7 @@ public class SquiggleCop : Task
     private static readonly string SarifNotFound = "SQ1001";
     private static readonly string SarifV1Format = "SQ1002";
     private static readonly string BaselineFileMismatch = "SQ2000";
+    private static readonly string AmbiguousBaselineFileReference = "SQ2001";
 
     private readonly SarifParser _parser = new();
 
@@ -34,6 +35,11 @@ public class SquiggleCop : Task
     /// </summary>
     [Required]
     public bool AutoBaseline { get; set; } = false;
+
+    /// <summary>
+    /// The set of @(AdditionalFiles) for the compilation. If a file with the name of <see cref="BaselineFile"/> is found it will be used instead of the default location.
+    /// </summary>
+    public ITaskItem[] AdditionalFiles { get; set; } = [];
 
     /// <summary>
     /// The name of the baseline file.
@@ -75,16 +81,17 @@ public class SquiggleCop : Task
             // Also, consider that resetting line endings may result in source control churn.
 
             string newBaseline = JsonConvert.SerializeObject(configs); // TODO: Pretty print the serialized JSON
+            string baselineFile = FindBaselineFile(AdditionalFiles) ?? BaselineFile;
 
-            if (AreDifferent(BaselineFile, newBaseline))
+            if (AreDifferent(baselineFile, newBaseline))
             {
                 if (AutoBaseline)
                 {
-                    File.WriteAllText(BaselineFile, newBaseline);
+                    WriteBaselineFile(baselineFile, newBaseline);
                 }
                 else
                 {
-                    LogWarning(warningCode: BaselineFileMismatch, "Baseline file mismatch: {0}", BaselineFile);
+                    LogWarning(warningCode: BaselineFileMismatch, "Baseline file mismatch: {0}", baselineFile);
                 }
             }
 
@@ -95,6 +102,33 @@ public class SquiggleCop : Task
             LogWarning(warningCode: SarifV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
             return true;
         }
+    }
+
+    private static void WriteBaselineFile(string path, string contents)
+    {
+        string? parent = Directory.GetParent(path)?.FullName;
+
+        if (parent is not null && !Directory.Exists(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(path, contents);
+    }
+
+    private string? FindBaselineFile(ITaskItem[] additionalFiles)
+    {
+        ITaskItem[] matches = additionalFiles
+            .Where(item => item.ItemSpec.EndsWith(BaselineFile, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(item => item.ItemSpec, StringComparer.Ordinal)
+            .ToArray();
+
+        if (matches.Length > 1)
+        {
+            LogWarning(AmbiguousBaselineFileReference, "Multiple baseline files found in @(AdditionalFiles); using the first one found: {0}", matches[0]);
+        }
+
+        return matches.FirstOrDefault()?.ItemSpec;
     }
 
     private static bool AreDifferent(string path, string contents)

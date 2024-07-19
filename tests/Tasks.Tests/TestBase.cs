@@ -1,10 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 using Microsoft.Build.Utilities.ProjectCreation;
 
 namespace SquiggleCop.Tasks.Tests;
 
-public abstract class TestBase : MSBuildTestBase, IDisposable
+[Collection("NoParallelization")] // MSBuild's in-proc build is not thread-safe
+public abstract class TestBase : IDisposable
 {
     protected TestBase()
     {
@@ -24,7 +26,7 @@ public abstract class TestBase : MSBuildTestBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1075:Avoid empty catch clause that catches System.Exception", Justification = "Test cleanup that can be impacted by other factors like AV software.")]
+    [SuppressMessage("Roslynator", "RCS1075:Avoid empty catch clause that catches System.Exception", Justification = "Test cleanup that can be impacted by other factors like AV software.")]
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
@@ -43,17 +45,5 @@ public abstract class TestBase : MSBuildTestBase, IDisposable
                 // Ignored
             }
         }
-    }
-
-    protected string GetTempFileName(string? extension = null)
-    {
-        return Path.Combine(TestRootPath, $"{Path.GetRandomFileName()}{extension ?? string.Empty}");
-    }
-
-    protected string GetTempProjectPath(string? extension = null)
-    {
-        DirectoryInfo tempDirectoryInfo = Directory.CreateDirectory(Path.Combine(TestRootPath, Path.GetRandomFileName()));
-
-        return Path.Combine(tempDirectoryInfo.FullName, $"{Path.GetRandomFileName()}{extension ?? string.Empty}");
     }
 }

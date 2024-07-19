@@ -3,7 +3,7 @@
     {
       Type: Warning,
       Code: SQ2000,
-      Message: Baseline file mismatch: SquiggleCop.Baseline.json
+      Message: Baseline file mismatch: {TestRootPath}/explicitFileSubdirectory/SquiggleCop.Baseline.json
     }
   ],
   BaselineFileContents: 

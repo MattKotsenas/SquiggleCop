@@ -12,7 +12,9 @@ public class BaselineFileTests : TestBase
         File.WriteAllText(Path.Combine(TestRootPath, "sample1.baseline"), TestData.Sample1.Baseline);
     }
 
-    // TODO: Implement explicit file support
+    private FileInfo GetBaselineFile(bool explicitFile) =>
+        new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", SquiggleCop.BaselineFile));
+
     // TODO: Add `\r\n` and `\n` in baseline files to test matrix
     // TODO: Test incremental build
 
@@ -21,24 +23,33 @@ public class BaselineFileTests : TestBase
     public async Task NoBaselineFile(bool? autoBaseline, bool explicitFile)
     {
         DateTime now = DateTime.UtcNow;
-        FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
+        FileInfo baselineFile = GetBaselineFile(explicitFile);
         const string errorLog = "sarif.log";
 
-        ProjectCreator.Templates.SimpleBuild()
+        ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
+                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog);
+
+        if (explicitFile)
+        {
+            project.ItemGroup().AdditionalFiles(baselineFile.FullName);
+        }
+
+        project
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()
-        )).UseParameters(autoBaseline, explicitFile);
+                await baselineFile.ReadAllTextAsyncOrDefault()))
+            .UseParameters(autoBaseline, explicitFile)
+            .ScrubDirectory(TestRootPath, "{TestRootPath}")
+            .ScrubPathSeparators();
         result.Should().BeTrue();
 
         if (autoBaseline ?? false)
@@ -57,10 +68,10 @@ public class BaselineFileTests : TestBase
     public async Task BaselineUpToDate(bool? autoBaseline, bool explicitFile)
     {
         DateTime now = DateTime.UtcNow;
-        FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
+        FileInfo baselineFile = GetBaselineFile(explicitFile);
         const string errorLog = "sarif.log";
 
-        ProjectCreator.Templates.SimpleBuild()
+        ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
                 .AutoBaseline(autoBaseline)
@@ -69,15 +80,24 @@ public class BaselineFileTests : TestBase
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.baseline"), baselineFile.FullName)
-                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1))
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
+
+        if (explicitFile)
+        {
+            project.ItemGroup().AdditionalFiles(baselineFile.FullName);
+        }
+
+        project
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()
-        )).UseParameters(autoBaseline, explicitFile);
+                await baselineFile.ReadAllTextAsyncOrDefault()))
+            .UseParameters(autoBaseline, explicitFile)
+            .ScrubDirectory(TestRootPath, "{TestRootPath}")
+            .ScrubPathSeparators();
         result.Should().BeTrue();
         baselineFile.Exists.Should().BeTrue();
         baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
@@ -88,10 +108,10 @@ public class BaselineFileTests : TestBase
     public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile)
     {
         DateTime now = DateTime.UtcNow;
-        FileInfo baselineFile = new(Path.Combine(TestRootPath, SquiggleCop.BaselineFile));
+        FileInfo baselineFile = GetBaselineFile(explicitFile);
         const string errorLog = "sarif.log";
 
-        ProjectCreator.Templates.SimpleBuild()
+        ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
                 .AutoBaseline(autoBaseline)
@@ -99,15 +119,25 @@ public class BaselineFileTests : TestBase
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
                 .TaskMessage("Write sample to simulate out-of-date baseline...")
-                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1))
+                .MakeDirTask([baselineFile.DirectoryName!])
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
+
+        if (explicitFile)
+        {
+            project.ItemGroup().AdditionalFiles(baselineFile.FullName);
+        }
+
+        project
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
         await Verify(
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()
-        )).UseParameters(autoBaseline, explicitFile);
+                await baselineFile.ReadAllTextAsyncOrDefault()))
+            .UseParameters(autoBaseline, explicitFile)
+            .ScrubDirectory(TestRootPath, "{TestRootPath}")
+            .ScrubPathSeparators();
         result.Should().BeTrue();
         baselineFile.Exists.Should().BeTrue();
 
