@@ -69,17 +69,12 @@ public class BaselineFileTests : TestBase
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
                 .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
-            .UsingRoslynCodeTask("_SetBaselineLastWriteTime",
-                $"""
-                // Set the last write time to a time in the past to simulate the file being up-to-date
-                File.SetLastWriteTimeUtc(@"{baselineFile.FullName}", DateTime.UtcNow.AddDays(-1));
-                """)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.baseline"), baselineFile.FullName)
-                .Task("_SetBaselineLastWriteTime")
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1))
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
@@ -111,17 +106,11 @@ public class BaselineFileTests : TestBase
             .PropertyGroup()
                 .ErrorLog(errorLog, "2.1")
                 .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant())
-            .UsingRoslynCodeTask("_SetBaselineLastWriteTime",
-                $"""
-                // Set the last write time to a time in the past to simulate the file being up-to-date
-                File.SetLastWriteTimeUtc(@"{baselineFile.FullName}", DateTime.UtcNow.AddDays(-1));
-                """)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
                 .TaskMessage("Write sample to simulate out-of-date baseline...")
-                .TouchFilesTask([baselineFile.FullName])
-                .Task("_SetBaselineLastWriteTime")
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1))
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 

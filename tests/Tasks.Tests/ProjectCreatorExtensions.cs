@@ -6,12 +6,21 @@ namespace SquiggleCop.Tasks.Tests;
 
 internal static class ProjectCreatorExtensions
 {
-    public static ProjectCreator TouchFilesTask(this ProjectCreator projectCreator, IReadOnlyCollection<string> paths, bool createIfNeeded = true)
+    public static ProjectCreator TouchFilesTask(this ProjectCreator projectCreator, IReadOnlyCollection<string> paths, bool createIfNeeded = true, DateTime? lastWriteTime = null)
     {
+        Dictionary<string, string?> parameters = new(StringComparer.Ordinal)
+        {
+            { "Files", string.Join(';', paths) },
+            { "AlwaysCreate", createIfNeeded.ToString().ToLowerInvariant() },
+        };
+
+        if (lastWriteTime is not null)
+        {
+            parameters.Add("Time", lastWriteTime.Value.ToString("O"));
+        }
+
         return projectCreator
-            .Task(
-                name: "Touch",
-                parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "Files", string.Join(';', paths) }, { "AlwaysCreate", createIfNeeded.ToString().ToLowerInvariant() } });
+            .Task(name: "Touch", parameters: parameters);
     }
 
     public static ProjectCreator CopyFileTask(this ProjectCreator projectCreator, string sourcePath, string destinationPath)
