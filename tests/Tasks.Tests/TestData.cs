@@ -1,6 +1,6 @@
 ﻿namespace SquiggleCop.Tasks.Tests;
 
-internal class TestData
+internal sealed class TestData
 {
     public string Sarif { get; init; }
     public string Baseline { get; init; }

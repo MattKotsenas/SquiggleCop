@@ -31,8 +31,8 @@ internal static class VerifyExtensions
         string backslash = directory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         string forwardslash = directory.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(backslash, replacement));
-        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(forwardslash, replacement));
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(backslash, replacement, StringComparison.Ordinal));
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(forwardslash, replacement, StringComparison.Ordinal));
 
         return settings;
     }

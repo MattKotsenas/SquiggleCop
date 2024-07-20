@@ -1,4 +1,7 @@
-﻿using Microsoft.CodeAnalysis.Sarif;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+using Microsoft.CodeAnalysis.Sarif;
 
 namespace SquiggleCop.Common;
 
@@ -14,15 +17,15 @@ internal static class SarifExtensions
 
     public static T GetPropertyOrDefault<T>(this IPropertyBagHolder bag, string name, T defaultValue)
     {
-        if (bag is null) { throw new ArgumentNullException(nameof(bag)); }
-        if (name is null) { throw new ArgumentNullException(nameof(name)); }
+        Guard.ThrowIfNull(bag);
+        Guard.ThrowIfNull(name);
 
         return bag.TryGetProperty(name, out T value) ? value : defaultValue;
     }
 
     public static string GetTitle(this ReportingDescriptor rule, Version compilerVersion)
     {
-        if (rule is null) { throw new ArgumentNullException(nameof(rule)); }
+        Guard.ThrowIfNull(rule);
 
         if (compilerVersion < Roslyn73070FixedVersion)
         {
@@ -49,14 +52,14 @@ internal static class SarifExtensions
 
     public static IReadOnlyCollection<ReportingDescriptor> GetRules(this Run run)
     {
-        if (run is null) { throw new ArgumentNullException(nameof(run)); }
+        Guard.ThrowIfNull(run);
 
         return [.. run.Tool?.Driver?.Rules ?? []];
     }
 
     public static IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
     {
-        if (run is null) { throw new ArgumentNullException(nameof(run)); }
+        Guard.ThrowIfNull(run);
 
         IList<Invocation> invocations = run.Invocations ?? [];
 
@@ -69,7 +72,7 @@ internal static class SarifExtensions
 
     public static FailureLevel GetEffectiveSeverity(this ReportingConfiguration rc)
     {
-        if (rc is null) { throw new ArgumentNullException(nameof(rc)); }
+        Guard.ThrowIfNull(rc);
 
         return !rc.Enabled ? FailureLevel.None : rc.Level;
     }

@@ -27,7 +27,7 @@ public class SarifParser
     /// </exception>
     public IReadOnlyCollection<DiagnosticConfig> Parse(Stream stream)
     {
-        if (stream is null) { throw new ArgumentNullException(nameof(stream)); }
+        Guard.ThrowIfNull(stream);
         if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
         if (!stream.CanSeek) { throw new ArgumentException("Stream must be seekable", nameof(stream)); }
 

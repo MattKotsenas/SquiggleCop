@@ -16,6 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)/UnsupportedVersionException.cs">
       <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/Guard.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
