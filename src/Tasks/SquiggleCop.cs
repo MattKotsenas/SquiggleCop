@@ -13,15 +13,6 @@ namespace SquiggleCop.Tasks;
 /// </summary>
 public class SquiggleCop : Task
 {
-    // Error code pattern:
-    //   - SQ1XXX: SARIF file parsing
-    //   - SQ2XXX: Baseline file handling
-    private static readonly string SarifNotSpecified = "SQ1000";
-    private static readonly string SarifNotFound = "SQ1001";
-    private static readonly string SarifV1Format = "SQ1002";
-    private static readonly string BaselineFileMismatch = "SQ2000";
-    private static readonly string AmbiguousBaselineFileReference = "SQ2001";
-
     private readonly SarifParser _parser = new();
 
     /// <summary>
@@ -56,13 +47,13 @@ public class SquiggleCop : Task
 
         if (ErrorLog is null)
         {
-            LogWarning(warningCode: SarifNotSpecified, "ErrorLog property not specified");
+            LogWarning(warningCode: DiagnosticIds.Sarif.NotSpecified, "ErrorLog property not specified");
             return true;
         }
 
         if (!File.Exists(ErrorLog))
         {
-            LogWarning(warningCode: SarifNotFound, "SARIF log file not found: {0}", ErrorLog);
+            LogWarning(warningCode: DiagnosticIds.Sarif.NotFound, "SARIF log file not found: {0}", ErrorLog);
             return true;
         }
 
@@ -91,7 +82,7 @@ public class SquiggleCop : Task
                 }
                 else
                 {
-                    LogWarning(warningCode: BaselineFileMismatch, "Baseline file mismatch: {0}", baselineFile);
+                    LogWarning(warningCode: DiagnosticIds.Baseline.Mismatch, "Baseline mismatch: {0}", baselineFile);
                 }
             }
 
@@ -99,7 +90,7 @@ public class SquiggleCop : Task
         }
         catch (UnsupportedVersionException)
         {
-            LogWarning(warningCode: SarifV1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
+            LogWarning(warningCode: DiagnosticIds.Sarif.V1Format, "SARIF log '{0}' is in v1 format; SquiggleCop requires SARIF v2.1 logs", ErrorLog);
             return true;
         }
     }
@@ -125,7 +116,7 @@ public class SquiggleCop : Task
 
         if (matches.Length > 1)
         {
-            LogWarning(AmbiguousBaselineFileReference, "Multiple baseline files found in @(AdditionalFiles); using the first one found: {0}", matches[0]);
+            LogWarning(DiagnosticIds.Baseline.AmbiguousReference, "Multiple baseline files found in @(AdditionalFiles); using the first one found: {0}", matches[0]);
         }
 
         return matches.FirstOrDefault()?.ItemSpec;
