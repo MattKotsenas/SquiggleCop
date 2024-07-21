@@ -16,7 +16,10 @@
   <Target
     Name="_SquiggleCop_Run"
     DependsOnTargets="Compile;_SquiggleCop_CalculateInputsOutputs"
-    BeforeTargets="AfterBuild">
+    BeforeTargets="AfterBuild"
+    Inputs="@(IntermediateAssembly);$(_SquiggleCop_ErrorLog)"
+    Outputs="@(SquiggleCop_BaselineFiles)"
+    Returns="@(SquiggleCop_BaselineFiles)">
 
     <SquiggleCop
       ErrorLog="$(_SquiggleCop_ErrorLog)"

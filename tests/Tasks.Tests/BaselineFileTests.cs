@@ -8,7 +8,6 @@ public class BaselineFileTests : TestBase
         new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", "SquiggleCop.Baseline.yaml"));
 
     // TODO: Add `\r\n` and `\n` in baseline files to test matrix
-    // TODO: Test incremental build
 
     [Theory]
     [CombinatorialData]
@@ -57,11 +56,12 @@ public class BaselineFileTests : TestBase
 
     [Theory]
     [CombinatorialData]
-    public async Task BaselineUpToDate(bool? autoBaseline, bool explicitFile)
+    public async Task BaselineUpToDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
         DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = GetBaselineFile(explicitFile);
         const string errorLog = "sarif.log";
+        DateTime errorLogWriteTime = shouldIncrementalBuild ? now.AddDays(-1) : now.AddDays(1);
 
         ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
@@ -70,9 +70,10 @@ public class BaselineFileTests : TestBase
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
+                .TouchFilesTask([errorLog], lastWriteTime: errorLogWriteTime)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
                 .WriteLinesToFileTask(baselineFile.FullName, TestData.Sample1.Baseline)
-                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: errorLogWriteTime.AddSeconds(1));
 
         if (explicitFile)
         {
@@ -87,21 +88,22 @@ public class BaselineFileTests : TestBase
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
                 await baselineFile.ReadAllTextAsyncOrDefault()))
-            .UseParameters(autoBaseline, explicitFile)
+            .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
         result.Should().BeTrue();
         baselineFile.Exists.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
+        baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
     }
 
     [Theory]
     [CombinatorialData]
-    public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile)
+    public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
         DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = GetBaselineFile(explicitFile);
         const string errorLog = "sarif.log";
+        DateTime errorLogWriteTime = shouldIncrementalBuild ? now.AddDays(-1) : now.AddDays(1);
 
         ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
@@ -110,9 +112,10 @@ public class BaselineFileTests : TestBase
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
+                .TouchFilesTask([errorLog], lastWriteTime: errorLogWriteTime)
                 .TaskMessage("Write sample to simulate out-of-date baseline...")
                 .MakeDirTask([baselineFile.DirectoryName!])
-                .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
+                .TouchFilesTask([baselineFile.FullName], lastWriteTime: errorLogWriteTime.AddSeconds(1));
 
         if (explicitFile)
         {
@@ -127,7 +130,7 @@ public class BaselineFileTests : TestBase
             new BaselineFileResults(
                 output.ToBuildLogMessages(),
                 await baselineFile.ReadAllTextAsyncOrDefault()))
-            .UseParameters(autoBaseline, explicitFile)
+            .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
         result.Should().BeTrue();
@@ -135,11 +138,18 @@ public class BaselineFileTests : TestBase
 
         if (autoBaseline ?? false)
         {
-            baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
+            if (shouldIncrementalBuild)
+            {
+                baselineFile.LastWriteTimeUtc.Should().BeCloseTo(now, precision: TimeSpan.FromHours(1));
+            }
+            else
+            {
+                baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
+            }
         }
         else
         {
-            baselineFile.LastWriteTimeUtc.Should().BeBefore(now);
+            baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
         }
     }
 }
