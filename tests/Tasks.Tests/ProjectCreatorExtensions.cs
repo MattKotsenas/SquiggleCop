@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 using Microsoft.Build.Utilities.ProjectCreation;
 
@@ -43,6 +44,21 @@ internal static class ProjectCreatorExtensions
             .Task(
                 name: "Copy",
                 parameters: new Dictionary<string, string?>(StringComparer.Ordinal) { { "SourceFiles", sourcePath }, { "DestinationFiles", destinationPath } });
+    }
+
+    public static ProjectCreator WriteLinesToFileTask(this ProjectCreator projectCreator, string path, string lines, Encoding? encoding = null, bool overwrite = true)
+    {
+        encoding ??= Encoding.UTF8;
+
+        return projectCreator
+            .Task(name: "WriteLinesToFile",
+            parameters: new Dictionary<string, string?>(StringComparer.Ordinal)
+            {
+                { "File", path },
+                { "Lines", lines },
+                { "Overwrite", overwrite.ToString().ToLowerInvariant() },
+                { "Encoding", encoding.WebName },
+            });
     }
 
     public static ProjectCreator AutoBaseline(this ProjectCreator projectCreator, bool? autoBaseline = null)

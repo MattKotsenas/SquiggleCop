@@ -114,6 +114,5 @@ internal sealed class TestData
           IsEnabledByDefault: true
           EffectiveSeverities:
           - Note
-
         """);
 }

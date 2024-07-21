@@ -4,14 +4,6 @@ namespace SquiggleCop.Tasks.Tests;
 
 public class BaselineFileTests : TestBase
 {
-    public BaselineFileTests()
-    {
-        // Create sample SARIF and baseline files.
-        // These are considered "well known file names" inside the tests.
-        File.WriteAllText(Path.Combine(TestRootPath, "sample1.log"), TestData.Sample1.Sarif);
-        File.WriteAllText(Path.Combine(TestRootPath, "sample1.baseline"), TestData.Sample1.Baseline);
-    }
-
     private FileInfo GetBaselineFile(bool explicitFile) =>
         new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", SquiggleCop.BaselineFile));
 
@@ -32,7 +24,7 @@ public class BaselineFileTests : TestBase
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog);
+                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif);
 
         if (explicitFile)
         {
@@ -77,9 +69,9 @@ public class BaselineFileTests : TestBase
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
+                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
-                .CopyFileTask(Path.Combine(TestRootPath, "sample1.baseline"), baselineFile.FullName)
+                .WriteLinesToFileTask(baselineFile.FullName, TestData.Sample1.Baseline)
                 .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
 
         if (explicitFile)
@@ -117,7 +109,7 @@ public class BaselineFileTests : TestBase
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .CopyFileTask(Path.Combine(TestRootPath, "sample1.log"), errorLog)
+                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
                 .TaskMessage("Write sample to simulate out-of-date baseline...")
                 .MakeDirTask([baselineFile.DirectoryName!])
                 .TouchFilesTask([baselineFile.FullName], lastWriteTime: now.AddDays(-1));
