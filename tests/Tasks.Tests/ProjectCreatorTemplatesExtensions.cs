@@ -8,6 +8,6 @@ internal static class ProjectCreatorTemplatesExtensions
     {
         return templates.SdkCsproj()
             .ItemGroup()
-                .ItemPackageReference("SquiggleCop.Tasks", "*");
+                .ItemPackageReference("SquiggleCop.Tasks", "*-*"); // Use the latest version (there should only ever be 1), even if it's prerelease
     }
 }

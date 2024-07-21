@@ -1,8 +1,13 @@
-﻿using Microsoft.Build.Framework;
+﻿using System;
+
+using Microsoft.Build.Framework;
 
 using Newtonsoft.Json;
 
 using SquiggleCop.Common;
+
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 using Task = Microsoft.Build.Utilities.Task;
 
@@ -14,6 +19,9 @@ namespace SquiggleCop.Tasks;
 public class SquiggleCop : Task
 {
     private readonly SarifParser _parser = new();
+    private readonly ISerializer _serializer = new SerializerBuilder()
+        .WithNamingConvention(PascalCaseNamingConvention.Instance)
+        .Build();
 
     /// <summary>
     /// The SARIF log file to create a baseline from. Must be in SARIF v2.1 format.
@@ -35,7 +43,7 @@ public class SquiggleCop : Task
     /// <summary>
     /// The name of the baseline file.
     /// </summary>
-    public static string BaselineFile { get; } = "SquiggleCop.Baseline.json";
+    public static string BaselineFile { get; } = "SquiggleCop.Baseline.yaml";
 
     /// <summary>
     /// Create a baseline of Roslyn diagnostics from a given SARIF log file.
@@ -71,7 +79,7 @@ public class SquiggleCop : Task
             //
             // Also, consider that resetting line endings may result in source control churn.
 
-            string newBaseline = JsonConvert.SerializeObject(configs); // TODO: Pretty print the serialized JSON
+            string newBaseline = _serializer.Serialize(configs);
             string baselineFile = FindBaselineFile(AdditionalFiles) ?? BaselineFile;
 
             if (AreDifferent(baselineFile, newBaseline))

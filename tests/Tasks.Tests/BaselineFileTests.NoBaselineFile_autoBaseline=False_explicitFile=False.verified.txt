@@ -3,7 +3,7 @@
     {
       Type: Warning,
       Code: SQ2000,
-      Message: Baseline mismatch: SquiggleCop.Baseline.json
+      Message: Baseline mismatch: SquiggleCop.Baseline.yaml
     }
   ],
   BaselineFileContents: 

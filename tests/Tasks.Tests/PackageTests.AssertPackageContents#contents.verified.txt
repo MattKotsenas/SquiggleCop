@@ -24,6 +24,7 @@
 |   |   |-- System.Runtime.CompilerServices.Unsafe.dll
 |   |   |-- System.Text.Encoding.CodePages.dll
 |   |   |-- TraceReloggerLib.dll
+|   |   |-- YamlDotNet.dll
 |   |-- net6.0
 |   |   |-- Dia2Lib.dll
 |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
@@ -36,6 +37,7 @@
 |   |   |-- System.Collections.Immutable.dll
 |   |   |-- System.Text.Encoding.CodePages.dll
 |   |   |-- TraceReloggerLib.dll
+|   |   |-- YamlDotNet.dll
 |   |   |-- runtimes
 |   |   |   |-- win
 |   |   |   |   |-- lib

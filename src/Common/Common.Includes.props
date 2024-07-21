@@ -23,5 +23,6 @@
 
   <ItemGroup>
     <PackageReference Include="Sarif.Sdk" />
+    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 </Project>

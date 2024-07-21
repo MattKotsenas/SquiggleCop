@@ -105,6 +105,15 @@ internal sealed class TestData
           ]
         }
         """,
-        baseline: """[{"Id":"CA1000","Title":"Do not declare static members on generic types","Category":"Design","DefaultSeverity":"Note","IsEnabledByDefault":true,"EffectiveSeverities":["Note"]}]"""
-        );
+        baseline:
+        """
+        - Id: CA1000
+          Title: Do not declare static members on generic types
+          Category: Design
+          DefaultSeverity: Note
+          IsEnabledByDefault: true
+          EffectiveSeverities:
+          - Note
+
+        """);
 }
