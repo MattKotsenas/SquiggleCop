@@ -26,6 +26,7 @@
   <ItemGroup>
     <PackageReference Include="Cocona" />
     <Content Include="$(RepoRoot)/README.md" PackagePath="/" />
+    <PackageReference Include="Spectre.Console" />
   </ItemGroup>
 
 </Project>

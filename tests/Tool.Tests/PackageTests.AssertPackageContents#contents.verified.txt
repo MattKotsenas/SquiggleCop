@@ -37,6 +37,7 @@
 |   |   |   |-- Microsoft.Extensions.Primitives.dll
 |   |   |   |-- Newtonsoft.Json.dll
 |   |   |   |-- Sarif.dll
+|   |   |   |-- Spectre.Console.dll
 |   |   |   |-- SquiggleCop.Tool.deps.json
 |   |   |   |-- SquiggleCop.Tool.dll
 |   |   |   |-- SquiggleCop.Tool.runtimeconfig.json

@@ -1,7 +1,16 @@
 ﻿using Cocona;
+using Cocona.Builder;
 
-CoconaApp app = CoconaApp.CreateBuilder().Build();
+using Microsoft.Extensions.DependencyInjection;
 
-app.AddCommand("generate", () => Console.WriteLine("Hello, World!"));
+using Spectre.Console;
+
+CoconaAppBuilder builder = CoconaApp.CreateBuilder();
+
+builder.Services.AddSingleton(AnsiConsole.Console);
+
+CoconaApp app = builder.Build();
+
+app.AddCommand("generate", (IAnsiConsole console) => console.MarkupLine("Hello, World! :globe_showing_americas:"));
 
 await app.RunAsync().ConfigureAwait(false);
