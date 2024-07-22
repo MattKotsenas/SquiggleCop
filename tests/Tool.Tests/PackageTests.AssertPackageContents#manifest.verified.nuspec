@@ -1,17 +1,17 @@
 ﻿<package>
   <metadata>
-    <id>SquiggleCop.Tasks</id>
+    <id>SquiggleCop.Tool</id>
     <version>********</version>
     <authors>Matt Kotsenas</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <readme>README.md</readme>
     <projectUrl>https://github.com/MattKotsenas/SquiggleCop</projectUrl>
-    <description>MSBuild tasks to prevent unintended changes to .NET analyzers</description>
+    <description>CLI tool to prevent unintended changes to .NET analyzers</description>
     <tags>MSBuild Analyzer</tags>
+    <packageTypes>
+      <packageType name="DotnetTool" />
+    </packageTypes>
     <repository type="git" url="https://github.com/********/SquiggleCop.git" branch="********" commit="****************************************" />
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.IO.FileSystem.Primitives" targetFramework=".NETFramework4.7.2" />
-    </frameworkAssemblies>
   </metadata>
 </package>

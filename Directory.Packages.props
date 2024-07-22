@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
+
   <Import Project="eng/targets/compiler/Packages.props" />
   <Import Project="eng/targets/reproducible/Packages.props" />
   <Import Project="eng/targets/versioning/Packages.props" />
@@ -17,6 +18,7 @@
     <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
   </ItemGroup>
   <ItemGroup>
+    <PackageVersion Include="Cocona" Version="2.2.0" />
     <PackageVersion Include="GetPackFromProject" Version="1.0.6" />
     <PackageVersion Include="Sarif.Sdk" Version="4.5.4" />
     <PackageVersion Include="YamlDotNet" Version="16.0.0" />

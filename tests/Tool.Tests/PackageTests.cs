@@ -1,13 +1,13 @@
-﻿using System.Reflection;
+using System.Reflection;
 
-namespace SquiggleCop.Tasks.Tests;
+namespace SquiggleCop.Tool.Tests;
 
 public class PackageTests
 {
     private static readonly FileInfo Package =
         new FileInfo(Assembly.GetExecutingAssembly().Location)
             .Directory!
-            .GetFiles("SquiggleCop.Tasks.*.nupkg")
+            .GetFiles("SquiggleCop.Tool.*.nupkg")
             .OrderByDescending(f => f.LastWriteTimeUtc)
             .First();
 

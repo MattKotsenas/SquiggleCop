@@ -1,0 +1,78 @@
+﻿/
+|-- README.md
+|-- SquiggleCop.Tool.nuspec
+|-- tools
+|   |-- net6.0
+|   |   |-- any
+|   |   |   |-- Cocona.Core.dll
+|   |   |   |-- Cocona.dll
+|   |   |   |-- Dia2Lib.dll
+|   |   |   |-- DotnetToolSettings.xml
+|   |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
+|   |   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.Abstractions.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.Binder.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.CommandLine.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.EnvironmentVariables.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.FileExtensions.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.Json.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.UserSecrets.dll
+|   |   |   |-- Microsoft.Extensions.Configuration.dll
+|   |   |   |-- Microsoft.Extensions.DependencyInjection.Abstractions.dll
+|   |   |   |-- Microsoft.Extensions.DependencyInjection.dll
+|   |   |   |-- Microsoft.Extensions.FileProviders.Abstractions.dll
+|   |   |   |-- Microsoft.Extensions.FileProviders.Physical.dll
+|   |   |   |-- Microsoft.Extensions.FileSystemGlobbing.dll
+|   |   |   |-- Microsoft.Extensions.Hosting.Abstractions.dll
+|   |   |   |-- Microsoft.Extensions.Hosting.dll
+|   |   |   |-- Microsoft.Extensions.Logging.Abstractions.dll
+|   |   |   |-- Microsoft.Extensions.Logging.Configuration.dll
+|   |   |   |-- Microsoft.Extensions.Logging.Console.dll
+|   |   |   |-- Microsoft.Extensions.Logging.Debug.dll
+|   |   |   |-- Microsoft.Extensions.Logging.EventLog.dll
+|   |   |   |-- Microsoft.Extensions.Logging.EventSource.dll
+|   |   |   |-- Microsoft.Extensions.Logging.dll
+|   |   |   |-- Microsoft.Extensions.Options.ConfigurationExtensions.dll
+|   |   |   |-- Microsoft.Extensions.Options.dll
+|   |   |   |-- Microsoft.Extensions.Primitives.dll
+|   |   |   |-- Newtonsoft.Json.dll
+|   |   |   |-- Sarif.dll
+|   |   |   |-- SquiggleCop.Tool.deps.json
+|   |   |   |-- SquiggleCop.Tool.dll
+|   |   |   |-- SquiggleCop.Tool.runtimeconfig.json
+|   |   |   |-- SquiggleCop.Tool.xml
+|   |   |   |-- System.Diagnostics.EventLog.dll
+|   |   |   |-- TraceReloggerLib.dll
+|   |   |   |-- YamlDotNet.dll
+|   |   |   |-- amd64
+|   |   |   |   |-- KernelTraceControl.dll
+|   |   |   |   |-- msdia140.dll
+|   |   |   |   |-- msvcp140.dll
+|   |   |   |   |-- vcruntime140.dll
+|   |   |   |   |-- vcruntime140_1.dll
+|   |   |   |-- arm64
+|   |   |   |   |-- KernelTraceControl.dll
+|   |   |   |   |-- msdia140.dll
+|   |   |   |   |-- msvcp140.dll
+|   |   |   |   |-- vcruntime140.dll
+|   |   |   |   |-- vcruntime140_1.dll
+|   |   |   |-- ja-JP
+|   |   |   |   |-- Cocona.Core.resources.dll
+|   |   |   |   |-- Cocona.resources.dll
+|   |   |   |-- ko-KR
+|   |   |   |   |-- Cocona.Core.resources.dll
+|   |   |   |   |-- Cocona.resources.dll
+|   |   |   |-- runtimes
+|   |   |   |   |-- win
+|   |   |   |   |   |-- lib
+|   |   |   |   |   |   |-- net6.0
+|   |   |   |   |   |   |   |-- System.Diagnostics.EventLog.Messages.dll
+|   |   |   |   |   |   |   |-- System.Diagnostics.EventLog.dll
+|   |   |   |-- x86
+|   |   |   |   |-- KernelTraceControl.Win61.dll
+|   |   |   |   |-- KernelTraceControl.dll
+|   |   |   |   |-- msdia140.dll
+|   |   |   |   |-- msvcp140.dll
+|   |   |   |   |-- vcruntime140.dll
+|   |   |   |-- zh-CN
+|   |   |   |   |-- Cocona.Core.resources.dll

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>SquiggleCop.Tool</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Nuspec properties">
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnet-squigglecop</ToolCommandName>
+    <RollForward>major</RollForward>
+    <Authors>Matt Kotsenas</Authors>
+    <Description>CLI tool to prevent unintended changes to .NET analyzers</Description>
+    <PackageProjectUrl>https://github.com/MattKotsenas/SquiggleCop</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>MSBuild Analyzer</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Cocona" />
+    <Content Include="$(RepoRoot)/README.md" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
