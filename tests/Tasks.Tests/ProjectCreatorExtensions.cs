@@ -63,8 +63,13 @@ internal static class ProjectCreatorExtensions
 
     public static ProjectCreator AutoBaseline(this ProjectCreator projectCreator, bool? autoBaseline = null)
     {
-        return projectCreator
-            .Property("SquiggleCop_AutoBaseline", autoBaseline?.ToString().ToLowerInvariant());
+        if (autoBaseline is not null)
+        {
+            projectCreator
+                .Property("SquiggleCop_AutoBaseline", autoBaseline.ToString()!.ToLowerInvariant());
+        }
+
+        return projectCreator;
     }
 
     public static ProjectCreator ErrorLog(this ProjectCreator projectCreator, string file, string? version = null)
