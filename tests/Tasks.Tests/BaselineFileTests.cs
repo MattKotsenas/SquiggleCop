@@ -36,22 +36,13 @@ public class BaselineFileTests : TestBase
 
         await Verify(
             new BaselineFileResults(
+                result,
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()))
+                baselineFile.Exists,
+                baselineFile.WasWritten(now)))
             .UseParameters(autoBaseline, explicitFile)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
-        result.Should().BeTrue();
-
-        if (autoBaseline ?? false)
-        {
-            baselineFile.Exists.Should().BeTrue();
-            baselineFile.LastWriteTimeUtc.Should().BeOnOrAfter(now);
-        }
-        else
-        {
-            baselineFile.Exists.Should().BeFalse();
-        }
     }
 
     [Theory]
@@ -86,14 +77,13 @@ public class BaselineFileTests : TestBase
 
         await Verify(
             new BaselineFileResults(
+                result,
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()))
+                baselineFile.Exists,
+                baselineFile.WasWritten(now)))
             .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
-        result.Should().BeTrue();
-        baselineFile.Exists.Should().BeTrue();
-        baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
     }
 
     [Theory]
@@ -128,28 +118,12 @@ public class BaselineFileTests : TestBase
 
         await Verify(
             new BaselineFileResults(
+                result,
                 output.ToBuildLogMessages(),
-                await baselineFile.ReadAllTextAsyncOrDefault()))
+                baselineFile.Exists,
+                baselineFile.WasWritten(now)))
             .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
-        result.Should().BeTrue();
-        baselineFile.Exists.Should().BeTrue();
-
-        if (autoBaseline ?? false)
-        {
-            if (shouldIncrementalBuild)
-            {
-                baselineFile.LastWriteTimeUtc.Should().BeCloseTo(now, precision: TimeSpan.FromHours(1));
-            }
-            else
-            {
-                baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
-            }
-        }
-        else
-        {
-            baselineFile.LastWriteTimeUtc.Should().BeCloseTo(errorLogWriteTime, TimeSpan.FromSeconds(1));
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿{
+  BuildResult: true,
   BuildLogMessages: [
     {
       Type: Warning,
@@ -6,5 +7,6 @@
       Message: Baseline mismatch: {TestRootPath}/explicitFileSubdirectory/SquiggleCop.Baseline.yaml
     }
   ],
-  BaselineFileContents: 
+  BaselineExists: false,
+  BaselineWritten: false
 }

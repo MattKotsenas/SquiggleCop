@@ -1,12 +1,6 @@
 ﻿{
+  BuildResult: true,
   BuildLogMessages: [],
-  BaselineFileContents:
-- Id: CA1000
-  Title: Do not declare static members on generic types
-  Category: Design
-  DefaultSeverity: Note
-  IsEnabledByDefault: true
-  EffectiveSeverities:
-  - Note
-
+  BaselineExists: true,
+  BaselineWritten: true
 }
