@@ -1,7 +1,8 @@
 <Project>
-  <!-- TODO: Wire up inputs / outputs / incremental build -->
-  <Target Name="_RunSquiggleCop" BeforeTargets="AfterBuild">
+  <Target Name="_SquiggleCop_CalculateInputsOutputs">
     <PropertyGroup>
+      <!-- Strip the optional `,version=1|2|2.1` from the end to get the file path -->
+      <_SquiggleCop_ErrorLog>$([System.Text.RegularExpressions.Regex]::Replace("$(ErrorLog)", "^(.*?)(,version=[.\d]+)?$", "$1"))</_SquiggleCop_ErrorLog>
       <SquiggleCop_AutoBaseline Condition="'$(SquiggleCop_AutoBaseline)' == ''">false</SquiggleCop_AutoBaseline>
     </PropertyGroup>
 
@@ -10,9 +11,15 @@
       <SquiggleCop_BaselineFiles Include="@(AdditionalFiles)" Condition="'$(SquiggleCop_BaselineFileName)' == '%(Filename)%(Extension)'"/>
       <SquiggleCop_BaselineFiles Include="$(SquiggleCop_BaselineFileName)" Condition="'@(SquiggleCop_BaselineFiles)' == ''"/>
     </ItemGroup>
+  </Target>
+
+  <Target
+    Name="_SquiggleCop_Run"
+    DependsOnTargets="Compile;_SquiggleCop_CalculateInputsOutputs"
+    BeforeTargets="AfterBuild">
 
     <SquiggleCop
-      ErrorLog="$(ErrorLog)"
+      ErrorLog="$(_SquiggleCop_ErrorLog)"
       AutoBaseline="$(SquiggleCop_AutoBaseline)"
       BaselineFiles="@(SquiggleCop_BaselineFiles)"/>
   </Target>

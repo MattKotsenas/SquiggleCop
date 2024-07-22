@@ -47,8 +47,6 @@ public class SquiggleCop : Task
     /// <returns><see langword="true" />, if successful</returns>
     public override bool Execute()
     {
-        ErrorLog = TrimSarifVersion(ErrorLog);
-
         if (ErrorLog is null)
         {
             LogWarning(warningCode: DiagnosticIds.Sarif.NotSpecified, "ErrorLog property not specified");
@@ -131,18 +129,5 @@ public class SquiggleCop : Task
     {
         string helpLink = $"https://github.com/MattKotsenas/SquiggleCop/tree/{ThisAssembly.GitCommitId}/docs/{warningCode}.md";
         Log.LogWarning(subcategory: null, warningCode, helpKeyword: null, helpLink, file: null, lineNumber: 0, columnNumber: 0, endLineNumber: 0, endColumnNumber: 0, message, messageArgs);
-    }
-
-    private static string? TrimSarifVersion(string? errorLog)
-    {
-        if (errorLog is null) { return errorLog; }
-
-        int index = errorLog.LastIndexOf(",version=", StringComparison.OrdinalIgnoreCase);
-        if (index > -1)
-        {
-            errorLog = errorLog[..index];
-        }
-
-        return errorLog;
     }
 }
