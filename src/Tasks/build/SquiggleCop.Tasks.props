@@ -1,9 +1,13 @@
 <Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
 
-  <PropertyGroup>
+  <PropertyGroup Label="TreatAsLocal properties">
     <TaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' ">net6.0</TaskFolder>
     <TaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net472</TaskFolder>
     <TaskAssembly>$(MSBuildThisFileDirectory)../tasks/$(TaskFolder)/SquiggleCop.Tasks.dll</TaskAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SquiggleCop_BaselineFileName>SquiggleCop.Baseline.yaml</SquiggleCop_BaselineFileName>
   </PropertyGroup>
 
   <UsingTask TaskName="SquiggleCop.Tasks.SquiggleCop" AssemblyFile="$(TaskAssembly)" />

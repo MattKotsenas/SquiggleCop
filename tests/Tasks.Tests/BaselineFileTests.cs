@@ -5,7 +5,7 @@ namespace SquiggleCop.Tasks.Tests;
 public class BaselineFileTests : TestBase
 {
     private FileInfo GetBaselineFile(bool explicitFile) =>
-        new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", SquiggleCop.BaselineFile));
+        new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", "SquiggleCop.Baseline.yaml"));
 
     // TODO: Add `\r\n` and `\n` in baseline files to test matrix
     // TODO: Test incremental build

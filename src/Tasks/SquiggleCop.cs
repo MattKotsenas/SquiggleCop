@@ -29,21 +29,17 @@ public class SquiggleCop : Task
     public string? ErrorLog { get; set; }
 
     /// <summary>
-    /// If <see langword="true"/>, the <see cref="BaselineFile"/> with be automatically created / updated.
-    /// If <see langword="false"/>, the task will warn if the baseline file already exists.
+    /// If <see langword="true"/>, the baseline file will be automatically created / updated.
+    /// If <see langword="false"/>, the task will warn if the existing baseline file does not match the new baseline.
     /// </summary>
     [Required]
     public bool AutoBaseline { get; set; } = false;
 
     /// <summary>
-    /// The set of @(AdditionalFiles) for the compilation. If a file with the name of <see cref="BaselineFile"/> is found it will be used instead of the default location.
+    /// The baseline file to write to. If this collection contains more than one item a warning is logged
+    /// and the first item is used.
     /// </summary>
-    public ITaskItem[] AdditionalFiles { get; set; } = [];
-
-    /// <summary>
-    /// The name of the baseline file.
-    /// </summary>
-    public static string BaselineFile { get; } = "SquiggleCop.Baseline.yaml";
+    public ITaskItem[] BaselineFiles { get; set; } = [];
 
     /// <summary>
     /// Create a baseline of Roslyn diagnostics from a given SARIF log file.
@@ -65,6 +61,8 @@ public class SquiggleCop : Task
             return true;
         }
 
+        string baselineFile = ValidateBaselineFile(BaselineFiles);
+
         try
         {
             using Stream stream = File.OpenRead(ErrorLog!);
@@ -80,7 +78,6 @@ public class SquiggleCop : Task
             // Also, consider that resetting line endings may result in source control churn.
 
             string newBaseline = _serializer.Serialize(configs);
-            string baselineFile = FindBaselineFile(AdditionalFiles) ?? BaselineFile;
 
             if (AreDifferent(baselineFile, newBaseline))
             {
@@ -115,19 +112,14 @@ public class SquiggleCop : Task
         File.WriteAllText(path, contents);
     }
 
-    private string? FindBaselineFile(ITaskItem[] additionalFiles)
+    private string ValidateBaselineFile(ITaskItem[] baselineFiles)
     {
-        ITaskItem[] matches = additionalFiles
-            .Where(item => item.ItemSpec.EndsWith(BaselineFile, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(item => item.ItemSpec, StringComparer.Ordinal)
-            .ToArray();
-
-        if (matches.Length > 1)
+        if (baselineFiles.Length > 1)
         {
-            LogWarning(DiagnosticIds.Baseline.AmbiguousReference, "Multiple baseline files found in @(AdditionalFiles); using the first one found: {0}", matches[0]);
+            LogWarning(DiagnosticIds.Baseline.AmbiguousReference, "Multiple baseline files found in @(AdditionalFiles); using the first one found: {0}", baselineFiles[0]);
         }
 
-        return matches.FirstOrDefault()?.ItemSpec;
+        return baselineFiles[0].ItemSpec;
     }
 
     private static bool AreDifferent(string path, string contents)

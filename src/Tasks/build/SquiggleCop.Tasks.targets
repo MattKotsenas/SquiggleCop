@@ -5,9 +5,15 @@
       <SquiggleCop_AutoBaseline Condition="'$(SquiggleCop_AutoBaseline)' == ''">false</SquiggleCop_AutoBaseline>
     </PropertyGroup>
 
+    <ItemGroup>
+      <!-- Search @(AddtionalFiles) for the baseline file; if not found, set it to the default -->
+      <SquiggleCop_BaselineFiles Include="@(AdditionalFiles)" Condition="'$(SquiggleCop_BaselineFileName)' == '%(Filename)%(Extension)'"/>
+      <SquiggleCop_BaselineFiles Include="$(SquiggleCop_BaselineFileName)" Condition="'@(SquiggleCop_BaselineFiles)' == ''"/>
+    </ItemGroup>
+
     <SquiggleCop
       ErrorLog="$(ErrorLog)"
       AutoBaseline="$(SquiggleCop_AutoBaseline)"
-      AdditionalFiles="@(AdditionalFiles)" />
+      BaselineFiles="@(SquiggleCop_BaselineFiles)"/>
   </Target>
 </Project>
