@@ -4,6 +4,9 @@ namespace SquiggleCop.Tasks.Tests;
 
 public class BaselineFileTests : TestBase
 {
+    private DateTime Now { get; } = DateTime.UtcNow;
+    private string ErrorLog { get; } = "sarif.log";
+
     private FileInfo GetBaselineFile(bool explicitFile) =>
         new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", "SquiggleCop.Baseline.yaml"));
 
@@ -13,17 +16,15 @@ public class BaselineFileTests : TestBase
     [CombinatorialData]
     public async Task NoBaselineFile(bool? autoBaseline, bool explicitFile)
     {
-        DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = GetBaselineFile(explicitFile);
-        const string errorLog = "sarif.log";
 
         ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .ErrorLog(errorLog, "2.1")
+                .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif);
+                .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif);
 
         if (explicitFile)
         {
@@ -39,7 +40,7 @@ public class BaselineFileTests : TestBase
                 result,
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
-                baselineFile.WasWritten(now)))
+                baselineFile.WasWritten(Now)))
             .UseParameters(autoBaseline, explicitFile)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
@@ -49,19 +50,17 @@ public class BaselineFileTests : TestBase
     [CombinatorialData]
     public async Task BaselineUpToDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
-        DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = GetBaselineFile(explicitFile);
-        const string errorLog = "sarif.log";
-        DateTime errorLogWriteTime = shouldIncrementalBuild ? now.AddDays(-1) : now.AddDays(1);
+        DateTime errorLogWriteTime = shouldIncrementalBuild ? Now.AddDays(-1) : Now.AddDays(1);
 
         ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .ErrorLog(errorLog, "2.1")
+                .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
-                .TouchFilesTask([errorLog], lastWriteTime: errorLogWriteTime)
+                .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif)
+                .TouchFilesTask([ErrorLog], lastWriteTime: errorLogWriteTime)
                 .TaskMessage("Write sample to simulate up-to-date baseline...")
                 .WriteLinesToFileTask(baselineFile.FullName, TestData.Sample1.Baseline)
                 .TouchFilesTask([baselineFile.FullName], lastWriteTime: errorLogWriteTime.AddSeconds(1));
@@ -80,7 +79,7 @@ public class BaselineFileTests : TestBase
                 result,
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
-                baselineFile.WasWritten(now)))
+                baselineFile.WasWritten(Now)))
             .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
@@ -90,19 +89,17 @@ public class BaselineFileTests : TestBase
     [CombinatorialData]
     public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
-        DateTime now = DateTime.UtcNow;
         FileInfo baselineFile = GetBaselineFile(explicitFile);
-        const string errorLog = "sarif.log";
-        DateTime errorLogWriteTime = shouldIncrementalBuild ? now.AddDays(-1) : now.AddDays(1);
+        DateTime errorLogWriteTime = shouldIncrementalBuild ? Now.AddDays(-1) : Now.AddDays(1);
 
         ProjectCreator project = ProjectCreator.Templates.SimpleBuild()
             .PropertyGroup()
-                .ErrorLog(errorLog, "2.1")
+                .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
-                .WriteLinesToFileTask(errorLog, TestData.Sample1.Sarif)
-                .TouchFilesTask([errorLog], lastWriteTime: errorLogWriteTime)
+                .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif)
+                .TouchFilesTask([ErrorLog], lastWriteTime: errorLogWriteTime)
                 .TaskMessage("Write sample to simulate out-of-date baseline...")
                 .MakeDirTask([baselineFile.DirectoryName!])
                 .TouchFilesTask([baselineFile.FullName], lastWriteTime: errorLogWriteTime.AddSeconds(1));
@@ -121,7 +118,7 @@ public class BaselineFileTests : TestBase
                 result,
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
-                baselineFile.WasWritten(now)))
+                baselineFile.WasWritten(Now)))
             .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
