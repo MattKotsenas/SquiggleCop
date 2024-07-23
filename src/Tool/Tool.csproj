@@ -14,7 +14,7 @@
     <ToolCommandName>dotnet-squigglecop</ToolCommandName>
     <RollForward>major</RollForward>
     <Authors>Matt Kotsenas</Authors>
-    <Description>CLI tool to prevent unintended changes to .NET analyzers</Description>
+    <Description>CLI tool to prevent unintended changes to .NET (Roslyn) analyzers</Description>
     <PackageProjectUrl>https://github.com/MattKotsenas/SquiggleCop</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>MSBuild Analyzer</PackageTags>
