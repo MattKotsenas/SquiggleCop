@@ -1,0 +1,16 @@
+﻿{
+  StandardOutput:
+Usage: dotnet squigglecop [command]
+
+SquiggleCop CLI - Generate and review analyzer configuration
+
+Commands:
+  generate    
+
+Options:
+  -h, --help    Show help message
+  --version     Show version
+,
+  StandardError: ,
+  IsSuccess: true
+}
