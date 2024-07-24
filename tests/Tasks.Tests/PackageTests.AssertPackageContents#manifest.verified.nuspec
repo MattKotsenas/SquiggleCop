@@ -3,6 +3,7 @@
     <id>SquiggleCop.Tasks</id>
     <version>********</version>
     <authors>Matt Kotsenas</authors>
+    <developmentDependency>true</developmentDependency>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
     <readme>README.md</readme>
