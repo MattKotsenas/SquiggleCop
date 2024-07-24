@@ -1,0 +1,6 @@
+﻿{
+  BuildResult: true,
+  BuildLogMessages: [],
+  BaselineExists: true,
+  BaselineWritten: true
+}

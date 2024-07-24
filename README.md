@@ -19,7 +19,9 @@ development processes.
 ### Enabling SARIF logs
 
 SquiggleCop uses [SARIF](https://sarifweb.azurewebsites.net/) v2.1 files to work its magic. If you aren't already
-producing SARIF files as part of your build, set the `ErrorLog` property, either in a
+producing SARIF files as part of your build, set the
+[`ErrorLog`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog)
+property, either in a
 [Directory.Build.props](https://learn.microsoft.com/en-us/visualstudio/msbuild/customize-by-directory?view=vs-2022)
 so it automatically applies to all projects:
 
@@ -27,7 +29,8 @@ so it automatically applies to all projects:
 <ErrorLog>$(MSBuildProjectFile).diagnostics.sarif,version=2.1</ErrorLog>
 ```
 
-> NOTE: We recommend you either add `*.sarif` to your `.gitignore` file
+> [!TIP]
+> We recommend you add `*.sarif` to your `.gitignore` file
 
 or on the command-line for ad-hoc validation:
 
@@ -35,11 +38,12 @@ or on the command-line for ad-hoc validation:
 dotnet build -p:ErrorLog=diagnostics.sarif%2cversion=2.1
 ```
 
-> NOTE: The command and semi-colon characters in the log path must be XML-escaped
+> [!IMPORTANT]
+> The comma or semi-colon character in the log path must be XML-escaped
 
 ### CLI Tool
 
-The CLI tool is designed for ad-hoc validation, or for interacting with baseline files. Install the CLI tool by running
+The CLI tool is designed for ad-hoc validation and interacting with baseline files. Install the CLI tool by running
 this command:
 
 ```powershell
@@ -52,15 +56,15 @@ then generate a baseline like this:
 dotnet squigglecop generate ./path/to/diagnostics.sarif --auto-baseline
 ```
 
-### MSBuild
+### MSBuild Tasks
 
-The MSBuild package is designed for generating baselines as part of a large build, or to continuously validate baselines
-to prevent unintentional changes to build systems.
+The Tasks package automatically integrates SquiggleCop into the build using MSBuild. This package is designed for
+generating baselines as part of a large build and to continuously validate baselines and prevent unintentional build changes.
 
-Add the MSBuild package like this:
+Add the Tasks package like this:
 
 ```powershell
-dotnet add package SquiggleCop.MSBuild
+dotnet add package SquiggleCop.Tasks
 ```
 
 If you use Central Package Management (CPM), use a
@@ -70,21 +74,11 @@ to add SquiggleCop to every project automatically.
 ```xml
 <Project>
   <ItemGroup>
-    <GlobalPackageReference Include="SquiggleCop.MSBuild" Version="*" />
+    <GlobalPackageReference Include="SquiggleCop.Tasks" Version="*" />
   </ItemGroup>
 </Project>
 ```
 
-By default, SquiggleCop expects the baseline file to be named `SquiggleCop.Baseline.yaml` and placed next to the project
-file. To specify a custom path to the baseline file, add an item to `AdditionalFiles` that points to the baseline file:
-
-```xml
-<Project>
-  <ItemGroup>
-    <AdditionalFiles Include="/path/to/SquiggleCop.Baseline.yaml" />
-  </ItemGroup>
-</Project>
-```
 
 If a new baseline doesn't match the existing file, SquiggleCop emits MSBuild warning `SQ2000: Baseline mismatch`.
 Either use the SquiggleCop CLI to create a new baseline, or enable automatic baselining by setting:
@@ -99,9 +93,13 @@ Either use the SquiggleCop CLI to create a new baseline, or enable automatic bas
 
 If autobaseline is on, be sure to review any changes to the baseline file before you commit your code.
 
+> [!CAUTION]
+> If you turn autobaseline on, be sure to turn it off in CI. Otherwise SquiggleCop may not be able to warn about
+> potential issues!
+
 ## Anatomy of a baseline file
 
-A baseline file is a YAML file with a repeating structure:
+A baseline file is a YAML file with a repeating structure. Here's a single rule entry:
 
 ```yaml
 - Id: CA1000
@@ -149,3 +147,40 @@ for different parts of the codebase. Note that inline suppressions will _not_ sh
 ### IsEverSuppressed
 
 `true` if the diagnostic is ever suppressed at a call site. Common ways to do this are `#pragma` and `[SuppressMessage]`.
+
+## Advanced configuration
+
+### Alternate baseline paths
+
+By default, SquiggleCop expects the baseline file to be named `SquiggleCop.Baseline.yaml` and placed next to the project
+file. To specify a custom path to the baseline file, add an item to `AdditionalFiles` that points to the baseline file:
+
+```xml
+<Project>
+  <ItemGroup>
+    <AdditionalFiles Include="/path/to/SquiggleCop.Baseline.yaml" />
+  </ItemGroup>
+</Project>
+```
+
+### TreatWarningsAsErrors
+
+Often, projects use `TreatWarningsAsErrors` in CI builds to prevent warnings from making into the main branch. Some
+projects go further and also enable it locally so that the CI and local development experience match.
+
+However, toggling TreatWarningsAsErrors _also_ changes the effective severity of analyzer diagnostics, which can lead to
+unnecessary churn in baseline files. If your project or development workflow toggles TreatWarningsAsErrors between CI
+and local development, also toggle the `SquiggleCop_Enabled` property based on the same logic.
+
+Here's an example project that toggles TreatWarningsAsErrors based on the
+[`ContinuousIntegrationBuild`](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild)
+property:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>$(ContinuousIntegrationBuild)</TreatWarningsAsErrors>
+    <SquiggleCop_Enabled>$(ContinuousIntegrationBuild)</SquiggleCop_Enabled>
+  </PropertyGroup>
+</Project>
+```

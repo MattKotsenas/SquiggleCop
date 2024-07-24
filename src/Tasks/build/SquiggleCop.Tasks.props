@@ -9,6 +9,7 @@
   <PropertyGroup>
     <SquiggleCop_BaselineFileName>SquiggleCop.Baseline.yaml</SquiggleCop_BaselineFileName>
     <SquiggleCop_AutoBaseline>false</SquiggleCop_AutoBaseline>
+    <SquiggleCop_Enabled>true</SquiggleCop_Enabled>
   </PropertyGroup>
 
   <UsingTask TaskName="SquiggleCop.Tasks.SquiggleCop" AssemblyFile="$(TaskAssembly)" />

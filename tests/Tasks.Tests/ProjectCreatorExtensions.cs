@@ -61,6 +61,11 @@ internal static class ProjectCreatorExtensions
             });
     }
 
+    public static ProjectCreator Enabled(this ProjectCreator projectCreator, bool enabled)
+    {
+        return projectCreator.Property("SquiggleCop_Enabled", enabled.ToString().ToLowerInvariant());
+    }
+
     public static ProjectCreator AutoBaseline(this ProjectCreator projectCreator, bool? autoBaseline = null)
     {
         if (autoBaseline is not null)

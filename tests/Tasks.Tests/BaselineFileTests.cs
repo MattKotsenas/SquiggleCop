@@ -14,7 +14,7 @@ public class BaselineFileTests : TestBase
 
     [Theory]
     [CombinatorialData]
-    public async Task NoBaselineFile(bool? autoBaseline, bool explicitFile)
+    public async Task NoBaselineFile(bool enabled, bool? autoBaseline, bool explicitFile)
     {
         FileInfo baselineFile = GetBaselineFile(explicitFile);
 
@@ -22,6 +22,7 @@ public class BaselineFileTests : TestBase
             .PropertyGroup()
                 .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
+                .Enabled(enabled)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif);
@@ -41,14 +42,14 @@ public class BaselineFileTests : TestBase
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
                 baselineFile.WasWritten(Now)))
-            .UseParameters(autoBaseline, explicitFile)
+            .UseParameters(enabled, autoBaseline, explicitFile)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
     }
 
     [Theory]
     [CombinatorialData]
-    public async Task BaselineUpToDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
+    public async Task BaselineUpToDate(bool enabled, bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
         FileInfo baselineFile = GetBaselineFile(explicitFile);
         DateTime errorLogWriteTime = shouldIncrementalBuild ? Now.AddDays(-1) : Now.AddDays(1);
@@ -57,6 +58,7 @@ public class BaselineFileTests : TestBase
             .PropertyGroup()
                 .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
+                .Enabled(enabled)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif)
@@ -80,14 +82,14 @@ public class BaselineFileTests : TestBase
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
                 baselineFile.WasWritten(Now)))
-            .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
+            .UseParameters(enabled, autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
     }
 
     [Theory]
     [CombinatorialData]
-    public async Task BaselineOutOfDate(bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
+    public async Task BaselineOutOfDate(bool enabled, bool? autoBaseline, bool explicitFile, bool shouldIncrementalBuild)
     {
         FileInfo baselineFile = GetBaselineFile(explicitFile);
         DateTime errorLogWriteTime = shouldIncrementalBuild ? Now.AddDays(-1) : Now.AddDays(1);
@@ -96,6 +98,7 @@ public class BaselineFileTests : TestBase
             .PropertyGroup()
                 .ErrorLog(ErrorLog, "2.1")
                 .AutoBaseline(autoBaseline)
+                .Enabled(enabled)
             .Target(name: "_SetSarifLog", beforeTargets: "AfterCompile")
                 .TaskMessage("Overwriting ErrorLog with sample to simulate compile...")
                 .WriteLinesToFileTask(ErrorLog, TestData.Sample1.Sarif)
@@ -119,7 +122,7 @@ public class BaselineFileTests : TestBase
                 output.ToBuildLogMessages(),
                 baselineFile.Exists,
                 baselineFile.WasWritten(Now)))
-            .UseParameters(autoBaseline, explicitFile, shouldIncrementalBuild)
+            .UseParameters(enabled, autoBaseline, explicitFile, shouldIncrementalBuild)
             .ScrubDirectory(TestRootPath, "{TestRootPath}")
             .ScrubPathSeparators();
     }

@@ -14,6 +14,7 @@
 
   <Target
     Name="_SquiggleCop_Run"
+    Condition="'$(SquiggleCop_Enabled)' == 'true'"
     DependsOnTargets="Compile;_SquiggleCop_CalculateInputsOutputs"
     BeforeTargets="AfterBuild"
     Inputs="@(IntermediateAssembly);$(_SquiggleCop_ErrorLog)"
