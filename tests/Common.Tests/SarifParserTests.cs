@@ -12,6 +12,6 @@ public class SarifParserTests
 
         IReadOnlyCollection<DiagnosticConfig> configs = await _parser.ParseAsync(data);
 
-        await Verify(configs);
+        await Verify(configs); // TODO: This should assert the YAML instead
     }
 }

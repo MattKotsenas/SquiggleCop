@@ -92,7 +92,8 @@ public class SarifParser
                 category: rule.GetPropertyOrDefault("category", string.Empty),
                 defaultSeverity: defaultSeverity,
                 isEnabledByDefault: defaultConfiguration.Enabled,
-                effectiveSeverities: effectiveSeverities);
+                effectiveSeverities: effectiveSeverities,
+                isEverSuppressed: rule.GetPropertyOrDefault("isEverSuppressed", false));
         }
     }
 }
