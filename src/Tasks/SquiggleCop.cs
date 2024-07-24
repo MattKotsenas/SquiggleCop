@@ -101,7 +101,6 @@ public class SquiggleCop : Task
     private static void WriteBaselineFile(string path, string contents)
     {
         string? parent = Directory.GetParent(path)?.FullName;
-
         if (parent is not null && !Directory.Exists(parent))
         {
             Directory.CreateDirectory(parent);

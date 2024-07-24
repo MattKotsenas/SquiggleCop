@@ -1,0 +1,5 @@
+﻿{
+  Lines: [
+    Baseline generated @ {TestRootPath}/output/SquiggleCop.Baseline.yaml
+  ]
+}

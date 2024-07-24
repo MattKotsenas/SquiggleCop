@@ -1,0 +1,6 @@
+﻿{
+  Lines: [
+    Error:  SARIF log file not found: '{TestRootPath}/NotFound.sarif'
+  ],
+  ExitCode: -10
+}

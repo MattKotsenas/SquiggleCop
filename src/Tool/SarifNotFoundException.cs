@@ -2,7 +2,7 @@
 
 internal class SarifNotFoundException : ExitCodeException
 {
-    private static readonly string MessageFormat = " SARIF log file not found: '{0}'";
+    private const string MessageFormat = " SARIF log file not found: '{0}'";
 
     public override int ExitCode { get; } = -10;
 

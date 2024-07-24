@@ -1,0 +1,6 @@
+﻿{
+  Lines: [
+    Error: SARIF file is invalid. Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.
+  ],
+  ExitCode: -11
+}

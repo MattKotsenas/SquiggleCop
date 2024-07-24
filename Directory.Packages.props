@@ -23,6 +23,7 @@
     <PackageVersion Include="GetPackFromProject" Version="1.0.6" />
     <PackageVersion Include="Sarif.Sdk" Version="4.5.4" />
     <PackageVersion Include="Spectre.Console" Version="0.49.1" />
+    <PackageVersion Include="Spectre.Console.Testing" Version="0.49.1" />
     <PackageVersion Include="YamlDotNet" Version="16.0.0" />
   </ItemGroup>
 </Project>

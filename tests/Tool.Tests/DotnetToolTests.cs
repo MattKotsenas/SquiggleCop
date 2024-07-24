@@ -1,10 +1,15 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
 
-namespace Tool.Tests;
+namespace SquiggleCop.Tool.Tests;
 
-
-public class CommandLineTests : TestBase
+/// <summary>
+/// Snapshot tests of the help commands. Verifies:
+///   - That the package can be installed and run
+///   - Required and optional arguments
+/// </summary>
+[Collection("NoParallelization")] // Running multiple instances of dotnet tools in parallel is not thread-safe
+public class DotnetToolTests : TestBase
 {
     private async Task<BufferedCommandResult> Install(string temp, string nugetConfig)
     {
@@ -26,6 +31,19 @@ public class CommandLineTests : TestBase
 
         BufferedCommandResult result = await Cli.Wrap("dotnet-squigglecop").ExecuteBufferedAsync();
 
-        await Verify(result).IgnoreMembers(typeof(CommandResult), "StartTime", "ExitTime", "RunTime");
+        await Verify(result).IgnoreCommandResultTimes();
+    }
+
+    [Fact]
+    public async Task PrintGenerateUsage()
+    {
+        await Install(TestRootPath, Repository.NuGetConfigPath);
+
+        BufferedCommandResult result = await Cli.Wrap("dotnet-squigglecop")
+            .WithArguments("generate --help".Split(" "))
+            .WithValidation(CommandResultValidation.None)
+            .ExecuteBufferedAsync();
+
+        await Verify(result).IgnoreCommandResultTimes();
     }
 }

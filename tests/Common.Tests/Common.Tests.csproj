@@ -9,15 +9,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-  <ItemGroup Label="Test data">
-    <None Remove="TestData\Log.v1.sarif" />
-    <EmbeddedResource Include="TestData\Log.v1.sarif" />
-    <None Remove="TestData\Log.v2.sarif" />
-    <EmbeddedResource Include="TestData\Log.v2.sarif" />
-    <None Remove="TestData\Log.old.v2.sarif" />
-    <EmbeddedResource Include="TestData\Log.old.v2.sarif" />
-  </ItemGroup>
-
+  <Import Project="$(RepoRoot)/tests/TestData/TestData.Includes.props" />
   <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
 
 </Project>

@@ -1,0 +1,10 @@
+﻿{
+  Lines: [
+    NotImplementedException: Manual baseline creation is not yet implemented. Use `--auto-baseline` and your source control system to review changes for now.,
+      at async Task<int> GenerateAsync(SarifParser parser, IAnsiConsole console, bool autoBaseline, string sarif, string output) in AppBuilder.cs:76                         ,
+      at async ValueTask<int> DispatchAsync(CommandDispatchContext ctx)                                                                                                      ,
+      at async ValueTask<int> OnCommandExecutionAsync(CoconaCommandExecutingContext ctx, CommandExecutionDelegate next) in SpectreParameterBindExceptionFilterAttribute.cs:22,
+      at async ValueTask<int> OnCommandExecutionAsync(CoconaCommandExecutingContext ctx, CommandExecutionDelegate next) in SpectreErrorHandlerFilterAttribute.cs:19          
+  ],
+  ExitCode: -1
+}

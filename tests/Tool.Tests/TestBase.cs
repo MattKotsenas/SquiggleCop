@@ -3,10 +3,17 @@ using System.Reflection;
 
 using Microsoft.Build.Utilities.ProjectCreation;
 
-namespace Tool.Tests;
+using SquiggleCop.Common.Tests;
+
+namespace SquiggleCop.Tool.Tests;
 
 public abstract class TestBase : IDisposable
 {
+    private readonly TestDataReader _testDataReader = new();
+
+    protected string TestRootPath { get; }
+    protected PackageRepository Repository { get; }
+
     protected TestBase()
     {
         TestRootPath = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())).FullName;
@@ -16,8 +23,18 @@ public abstract class TestBase : IDisposable
         Repository = PackageRepository.Create(TestRootPath, /*new Uri("https://api.nuget.org/v3/index.json"),*/ feed);
     }
 
-    protected string TestRootPath { get; }
-    protected PackageRepository Repository { get; }
+    protected async Task CopyTestData(string testDataName)
+    {
+        Stream fileStream = File.Create(Path.Combine(TestRootPath, testDataName));
+        await using (fileStream.ConfigureAwait(false))
+        {
+            Stream dataStream = _testDataReader.Read(testDataName);
+            await using (dataStream.ConfigureAwait(false))
+            {
+                await dataStream.CopyToAsync(fileStream).ConfigureAwait(false);
+            }
+        }
+    }
 
     public void Dispose()
     {
