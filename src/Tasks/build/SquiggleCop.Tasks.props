@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <SquiggleCop_BaselineFileName>SquiggleCop.Baseline.yaml</SquiggleCop_BaselineFileName>
-    <SquiggleCop_AutoBaseline>false</SquiggleCop_AutoBaseline>
-    <SquiggleCop_Enabled>true</SquiggleCop_Enabled>
+    <SquiggleCop_BaselineFileName Condition="'$(SquiggleCop_BaselineFileName)' == ''">SquiggleCop.Baseline.yaml</SquiggleCop_BaselineFileName>
+    <SquiggleCop_AutoBaseline Condition="'$(SquiggleCop_AutoBaseline)' == ''">false</SquiggleCop_AutoBaseline>
+    <SquiggleCop_Enabled Condition="'$(SquiggleCop_Enabled)' == ''">true</SquiggleCop_Enabled>
   </PropertyGroup>
 
   <UsingTask TaskName="SquiggleCop.Tasks.SquiggleCop" AssemblyFile="$(TaskAssembly)" />
