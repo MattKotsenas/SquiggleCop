@@ -16,6 +16,7 @@
     <PackageTags>MSBuild Analyzer</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DevelopmentDependency>true</DevelopmentDependency>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Label="MSBuild task settings">
@@ -42,6 +43,7 @@
     <Content Include="buildTransitive/SquiggleCop.Tasks.props" PackagePath="buildTransitive/" />
     <Content Include="buildTransitive/SquiggleCop.Tasks.targets" PackagePath="buildTransitive/" />
     <Content Include="$(RepoRoot)/README.md" PackagePath="/" />
+    <Content Include="$(RepoRoot)/icon.png" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>

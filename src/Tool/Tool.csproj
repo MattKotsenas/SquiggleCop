@@ -19,6 +19,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>MSBuild Analyzer</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <PackageReference Include="Cocona" />
     <Content Include="$(RepoRoot)/README.md" PackagePath="/" />
+    <Content Include="$(RepoRoot)/icon.png" PackagePath="/" />
     <PackageReference Include="Spectre.Console" />
   </ItemGroup>
 

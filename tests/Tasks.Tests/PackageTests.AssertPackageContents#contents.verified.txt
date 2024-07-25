@@ -7,6 +7,7 @@
 |-- buildTransitive
 |   |-- SquiggleCop.Tasks.props
 |   |-- SquiggleCop.Tasks.targets
+|-- icon.png
 |-- tasks
 |   |-- net472
 |   |   |-- Dia2Lib.dll

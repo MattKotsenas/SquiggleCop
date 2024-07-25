@@ -1,6 +1,7 @@
 ﻿/
 |-- README.md
 |-- SquiggleCop.Tool.nuspec
+|-- icon.png
 |-- tools
 |   |-- net6.0
 |   |   |-- any

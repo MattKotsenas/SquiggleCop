@@ -1,3 +1,7 @@
+<div align="center">
+ <img alt="SquiggleCop logo" height="200px" src="https://raw.githubusercontent.com/MattKotsenas/SquiggleCop/main/icon.png">
+</div>
+
 # SquiggleCop
 
 [![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.MSBuild?style=flat&logo=nuget&color=blue&label=SquiggleCop.MSBuild)](https://www.nuget.org/packages/SquiggleCop.MSBuild)
@@ -184,3 +188,9 @@ property:
   </PropertyGroup>
 </Project>
 ```
+
+---
+
+_Icon 'fractal' by Bohdan Burmich from
+[Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
+(CC BY 3.0)_
