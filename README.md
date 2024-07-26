@@ -4,13 +4,88 @@
 
 # SquiggleCop
 
+Prevent unintended configuration changes to .NET (Roslyn) analyzers.
+
 [![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.MSBuild?style=flat&logo=nuget&color=blue&label=SquiggleCop.MSBuild)](https://www.nuget.org/packages/SquiggleCop.MSBuild)
 [![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.Tool?style=flat&logo=nuget&color=blu&label=SquiggleCop.Tool)](https://www.nuget.org/packages/SquiggleCop.Tool)
 [![Main build](https://github.com/mattkotsenas/squigglecop/actions/workflows/main.yml/badge.svg)](https://github.com/mattkotsenas/squigglecop/actions/workflows/main.yml)
 
-Prevent unintended configuration changes to .NET (Roslyn) analyzers.
+There are many ways to configure diagnostic warning and error levels in a .NET build, and understanding how they all
+interact can be tricky to get correct. .NET / MSBuild support all these mechanisms (and probably more!) to configure
+what analyzers are enabled and at what severity level:
 
-SquiggleCop parsers compiler output to create a baseline file of all .NET (Roslyn) analyzer rules and their configured
+- In-box analyzers ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-8))
+- Analyzer NuGet packages ([example](https://www.nuget.org/packages/roslynator.analyzers#readme-body-tab))
+- `.editorconfig` ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files#editorconfig))
+- `.globalconfig` ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files#global-analyzerconfig))
+- `.ruleset` ([docs](https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2019/code-quality/using-rule-sets-to-group-code-analysis-rules?view=vs-2019-archive))
+- `WarningLevel` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#warninglevel))
+- `AnalysisLevel` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#analysis-level))
+- `TreatWarningsAsErrors` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors))
+- `WarningsAsErrors` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#warningsaserrors-and-warningsnotaserrors))
+- `WarningsNotAsErrors` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#warningsaserrors-and-warningsnotaserrors))
+- `NoWarn` ([docs](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#nowarn))
+
+That's a lot to keep track of!
+
+With SquiggleCop, any change to project files or build scripts produces an easy to understand (and diff!) baseline file
+that shows the consequences of the change:
+
+<table>
+<tr>
+<th>Code Change</th>
+<th>Baseline File Diff</th>
+</tr>
+<tr>
+<td>
+
+```diff
+--- a/sample.csproj
++++ b/sample.csproj
+@@ -3,7 +3,7 @@
+   <PropertyGroup>
+     <OutputType>Exe</OutputType>
+     <TargetFramework>net8.0</TargetFramework>
+-    <AnalysisLevel>5</AnalysisLevel>
++    <AnalysisLevel>latest</AnalysisLevel>
+     <ImplicitUsings>enable</ImplicitUsings>
+     <Nullable>enable</Nullable>
+```
+
+</td>
+<td>
+
+```diff
+--- a/SquiggleCop.Baseline.yaml
++++ b/SquiggleCop.Baseline.yaml
+@@ -476,39 +476,39 @@
+ - Id: CA1419
+   Title: Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle'
+   Category: Interoperability
+   DefaultSeverity: Note
+   IsEnabledByDefault: true
+   EffectiveSeverities:
+-  - None
+-  IsEverSuppressed: true
++  - Note
++  IsEverSuppressed: false
+ - Id: CA1420
+   Title: Property, type, or attribute requires runtime marshalling
+   Category: Interoperability
+   DefaultSeverity: Warning
+   IsEnabledByDefault: true
+   EffectiveSeverities:
+-  - None
+-  IsEverSuppressed: true
++  - Warning
++  IsEverSuppressed: false
+```
+
+</td>
+</tr>
+</table>
+
+SquiggleCop parses compiler output to create a baseline file of all .NET (Roslyn) analyzer rules and their configured
 severity levels. This baseline file should be checked into source control. On subsequent runs the new baseline is
 compared to the existing file. If baselines don't match, either an unexpected configuration change was made and should
 be fixed, or the baseline should be updated to document the new, expected configuration.
@@ -71,14 +146,14 @@ Add the Tasks package like this:
 dotnet add package SquiggleCop.Tasks
 ```
 
-If you use Central Package Management (CPM), use a
+If you use Central Package Management (CPM), you can use a
 [`GlobalPackageReference`](https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management#global-package-references)
 to add SquiggleCop to every project automatically.
 
 ```xml
 <Project>
   <ItemGroup>
-    <GlobalPackageReference Include="SquiggleCop.Tasks" Version="*" />
+    <GlobalPackageReference Include="SquiggleCop.Tasks" Version="{{version}}" />
   </ItemGroup>
 </Project>
 ```
@@ -95,7 +170,7 @@ Either use the SquiggleCop CLI to create a new baseline, or enable automatic bas
 </Project>
 ```
 
-If autobaseline is on, be sure to review any changes to the baseline file before you commit your code.
+If autobaseline is on, be sure to review any changes to the baseline file before committing your code.
 
 > [!CAUTION]
 > If you turn autobaseline on, be sure to turn it off in CI. Otherwise SquiggleCop may not be able to warn about
@@ -119,7 +194,7 @@ A baseline file is a YAML file with a repeating structure. Here's a single rule 
 
 ### ID
 
-This is the ID of the diagnostic. Nothing special here.
+This is the ID of the diagnostic.
 
 ### Title
 
@@ -150,7 +225,11 @@ for different parts of the codebase. Note that inline suppressions will _not_ sh
 
 ### IsEverSuppressed
 
-`true` if the diagnostic is ever suppressed at a call site. Common ways to do this are `#pragma` and `[SuppressMessage]`.
+`true` if the diagnostic is ever suppressed at a call site. Common ways to do this are:
+
+- `#pragma`
+- `[SuppressMessage]`
+- `<AnalysisLevel>`
 
 ## Advanced configuration
 
@@ -183,14 +262,14 @@ property:
 ```xml
 <Project>
   <PropertyGroup>
-    <TreatWarningsAsErrors>$(ContinuousIntegrationBuild)</TreatWarningsAsErrors>
-    <SquiggleCop_Enabled>$(ContinuousIntegrationBuild)</SquiggleCop_Enabled>
+    <PedanticMode Condition=" '$(_PedanticMode)' == '' ">$([MSBuild]::ValueOrDefault('$(ContinuousIntegrationBuild)', 'false'))</PedanticMode>
+    <TreatWarningsAsErrors>$(PedanticMode)</TreatWarningsAsErrors>
+    <SquiggleCop_Enabled>$(PedanticMode)</SquiggleCop_Enabled>
   </PropertyGroup>
 </Project>
 ```
 
 ---
 
-_Icon 'fractal' by Bohdan Burmich from
-[Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
+_Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
 (CC BY 3.0)_
