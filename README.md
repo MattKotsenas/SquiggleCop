@@ -6,8 +6,8 @@
 
 Prevent unintended configuration changes to .NET (Roslyn) analyzers.
 
-[![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.MSBuild?style=flat&logo=nuget&color=blue&label=SquiggleCop.MSBuild)](https://www.nuget.org/packages/SquiggleCop.MSBuild)
-[![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.Tool?style=flat&logo=nuget&color=blu&label=SquiggleCop.Tool)](https://www.nuget.org/packages/SquiggleCop.Tool)
+[![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.Tasks?style=flat&logo=nuget&color=blue&label=SquiggleCop.Tasks)](https://www.nuget.org/packages/SquiggleCop.Tasks)
+[![NuGet Version](https://img.shields.io/nuget/v/SquiggleCop.Tool?style=flat&logo=nuget&color=blue&label=SquiggleCop.Tool)](https://www.nuget.org/packages/SquiggleCop.Tool)
 [![Main build](https://github.com/mattkotsenas/squigglecop/actions/workflows/main.yml/badge.svg)](https://github.com/mattkotsenas/squigglecop/actions/workflows/main.yml)
 
 There are many ways to configure diagnostic warning and error levels in a .NET build, and understanding how they all
