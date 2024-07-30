@@ -1,13 +1,8 @@
-﻿using System;
-
-using Microsoft.Build.Framework;
+﻿using Microsoft.Build.Framework;
 
 using Newtonsoft.Json;
 
 using SquiggleCop.Common;
-
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 using Task = Microsoft.Build.Utilities.Task;
 
@@ -19,9 +14,7 @@ namespace SquiggleCop.Tasks;
 public class SquiggleCop : Task
 {
     private readonly SarifParser _parser = new();
-    private readonly ISerializer _serializer = new SerializerBuilder()
-        .WithNamingConvention(PascalCaseNamingConvention.Instance)
-        .Build();
+    private readonly Serializer _serializer = new();
 
     /// <summary>
     /// The SARIF log file to create a baseline from. Must be in SARIF v2.1 format.

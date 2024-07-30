@@ -8,9 +8,6 @@ using Spectre.Console;
 
 using SquiggleCop.Common;
 
-using YamlDotNet.Serialization.NamingConventions;
-using YamlDotNet.Serialization;
-
 namespace SquiggleCop.Tool;
 
 /// <summary>
@@ -44,6 +41,7 @@ public static class AppBuilder
         builder.Services.AddSingleton<SpectreParameterBindExceptionFilterAttribute>();
         builder.Services.AddSingleton(AnsiConsole.Console);
         builder.Services.AddTransient<SarifParser>();
+        builder.Services.AddSingleton<Serializer>();
 
         configure(builder);
 
@@ -59,6 +57,7 @@ public static class AppBuilder
 
     private static async Task<int> GenerateAsync(
         SarifParser parser,
+        Serializer serializer,
         IAnsiConsole console,
         [Option('a', Description = "Automatically update baseline if necessary")] bool autoBaseline,
         [Argument(Description = "The SARIF log to generate a baseline for")] string sarif,
@@ -84,11 +83,6 @@ public static class AppBuilder
             {
                 configs = await parser.ParseAsync(stream).ConfigureAwait(false);
             }
-
-            // TODO: Extract into common class
-            ISerializer serializer = new SerializerBuilder()
-                .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                .Build();
 
             string newBaseline = serializer.Serialize(configs);
             await WriteBaselineFileAsync(output, newBaseline).ConfigureAwait(false);

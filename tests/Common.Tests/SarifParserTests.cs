@@ -4,6 +4,7 @@ public class SarifParserTests
 {
     private readonly TestDataReader _reader = new();
     private readonly SarifParser _parser = new();
+    private readonly Serializer _serializer = new();
 
     [Fact]
     public async Task SnapshotTest()
@@ -11,7 +12,8 @@ public class SarifParserTests
         await using Stream data = _reader.Read("Log.v2.sarif");
 
         IReadOnlyCollection<DiagnosticConfig> configs = await _parser.ParseAsync(data);
+        string baseline = _serializer.Serialize(configs);
 
-        await Verify(configs); // TODO: This should assert the YAML instead
+        await Verify(baseline);
     }
 }
