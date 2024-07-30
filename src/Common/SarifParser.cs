@@ -41,7 +41,12 @@ public class SarifParser
             throw new UnsupportedVersionException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
 
-        return log.Runs.SelectMany(ParseRun).ToList();
+        return log
+            .Runs
+            .SelectMany(ParseRun)
+            .OrderBy(dc => dc.Id, StringComparer.InvariantCulture)
+            .ThenBy(dc => dc.Title, StringComparer.InvariantCulture)
+            .ToList();
     }
 
     /// <inheritdoc />

@@ -3300,6 +3300,28 @@
     IsEverSuppressed: true
   },
   {
+    Id: CS1591,
+    Title: Missing XML comment for publicly visible type or member,
+    Category: Compiler,
+    DefaultSeverity: Warning,
+    IsEnabledByDefault: true,
+    EffectiveSeverities: [
+      Warning
+    ],
+    IsEverSuppressed: false
+  },
+  {
+    Id: CS1998,
+    Title: Async method lacks 'await' operators and will run synchronously,
+    Category: Compiler,
+    DefaultSeverity: Warning,
+    IsEnabledByDefault: true,
+    EffectiveSeverities: [
+      Warning
+    ],
+    IsEverSuppressed: false
+  },
+  {
     Id: EnableGenerateDocumentationFile,
     Title: Set MSBuild property 'GenerateDocumentationFile' to 'true',
     Category: Style,
@@ -14976,28 +14998,6 @@
     Id: VSTHRD200,
     Title: Use "Async" suffix for async methods,
     Category: Style,
-    DefaultSeverity: Warning,
-    IsEnabledByDefault: true,
-    EffectiveSeverities: [
-      Warning
-    ],
-    IsEverSuppressed: false
-  },
-  {
-    Id: CS1998,
-    Title: Async method lacks 'await' operators and will run synchronously,
-    Category: Compiler,
-    DefaultSeverity: Warning,
-    IsEnabledByDefault: true,
-    EffectiveSeverities: [
-      Warning
-    ],
-    IsEverSuppressed: false
-  },
-  {
-    Id: CS1591,
-    Title: Missing XML comment for publicly visible type or member,
-    Category: Compiler,
     DefaultSeverity: Warning,
     IsEnabledByDefault: true,
     EffectiveSeverities: [
