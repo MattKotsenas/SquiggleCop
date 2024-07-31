@@ -34,7 +34,6 @@ that shows the consequences of the change:
 <table>
 <tr>
 <th>Code Change</th>
-<th>Baseline File Diff</th>
 </tr>
 <tr>
 <td>
@@ -47,38 +46,32 @@ that shows the consequences of the change:
      <OutputType>Exe</OutputType>
      <TargetFramework>net8.0</TargetFramework>
 -    <AnalysisLevel>5</AnalysisLevel>
-+    <AnalysisLevel>latest</AnalysisLevel>
++    <AnalysisLevel>6</AnalysisLevel>
      <ImplicitUsings>enable</ImplicitUsings>
      <Nullable>enable</Nullable>
 ```
 
 </td>
+<tr>
+<th>Baseline File Diff</th>
+</tr>
+<tr>
 <td>
 
 ```diff
 --- a/SquiggleCop.Baseline.yaml
 +++ b/SquiggleCop.Baseline.yaml
-@@ -476,39 +476,39 @@
- - Id: CA1419
-   Title: Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle'
-   Category: Interoperability
-   DefaultSeverity: Note
-   IsEnabledByDefault: true
-   EffectiveSeverities:
--  - None
--  IsEverSuppressed: true
-+  - Note
-+  IsEverSuppressed: false
- - Id: CA1420
-   Title: Property, type, or attribute requires runtime marshalling
-   Category: Interoperability
-   DefaultSeverity: Warning
-   IsEnabledByDefault: true
-   EffectiveSeverities:
--  - None
--  IsEverSuppressed: true
-+  - Warning
-+  IsEverSuppressed: false
+@@ -57,8 +57,8 @@
+ - {Id: CA1401, Title: P/Invokes should not be visible, Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], IsEverSuppressed: false}
+ - {Id: CA1416, Title: Validate platform compatibility, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false}
+ - {Id: CA1417, Title: Do not use 'OutAttribute' on string parameters for P/Invokes, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false}
+-- {Id: CA1418, Title: Use valid platform string, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [None], IsEverSuppressed: true}
+-- {Id: CA1419, Title: Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle', Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [None], IsEverSuppressed: true}
++- {Id: CA1418, Title: Use valid platform string, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false}
++- {Id: CA1419, Title: Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle', Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], IsEverSuppressed: false}
+ - {Id: CA1420, Title: 'Property, type, or attribute requires runtime marshalling', Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [None], IsEverSuppressed: true}
+ - {Id: CA1421, Title: This method uses runtime marshalling even when the 'DisableRuntimeMarshallingAttribute' is applied, Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [None], IsEverSuppressed: true}
+ - {Id: CA1422, Title: Validate platform compatibility, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [None], IsEverSuppressed: false}
 ```
 
 </td>
