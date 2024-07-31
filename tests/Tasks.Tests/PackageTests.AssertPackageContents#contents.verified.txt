@@ -11,6 +11,7 @@
 |-- tasks
 |   |-- net472
 |   |   |-- Dia2Lib.dll
+|   |   |-- DiffPlex.dll
 |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
 |   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
 |   |   |-- Newtonsoft.Json.dll
@@ -28,6 +29,7 @@
 |   |   |-- YamlDotNet.dll
 |   |-- net6.0
 |   |   |-- Dia2Lib.dll
+|   |   |-- DiffPlex.dll
 |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
 |   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
 |   |   |-- Newtonsoft.Json.dll

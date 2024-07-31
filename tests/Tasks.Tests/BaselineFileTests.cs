@@ -10,8 +10,6 @@ public class BaselineFileTests : TestBase
     private FileInfo GetBaselineFile(bool explicitFile) =>
         new(Path.Combine(TestRootPath, explicitFile ? "explicitFileSubdirectory" : "", "SquiggleCop.Baseline.yaml"));
 
-    // TODO: Add `\r\n` and `\n` in baseline files to test matrix
-
     [Theory]
     [CombinatorialData]
     public async Task NoBaselineFile(bool enabled, bool? autoBaseline, bool explicitFile)

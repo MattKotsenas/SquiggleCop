@@ -15,6 +15,8 @@ public class SquiggleCop : Task
 {
     private readonly SarifParser _parser = new();
     private readonly Serializer _serializer = new();
+    private readonly BaselineDiffer _differ = new();
+    private readonly BaselineWriter _writer = new();
 
     /// <summary>
     /// The SARIF log file to create a baseline from. Must be in SARIF v2.1 format.
@@ -60,21 +62,13 @@ public class SquiggleCop : Task
 
             IReadOnlyCollection<DiagnosticConfig> configs = _parser.Parse(stream);
 
-            // TODO: Rewrite for performance; maybe hash streams?
-
-            // TODO: Use line-by-line comparison to avoid newline handling differences.
-            // If we use binary comparison be sure to document the proper procedure
-            // for .gitattributes (or whatever).
-            //
-            // Also, consider that resetting line endings may result in source control churn.
-
             string newBaseline = _serializer.Serialize(configs);
 
             if (AreDifferent(baselineFile, newBaseline))
             {
                 if (AutoBaseline)
                 {
-                    WriteBaselineFile(baselineFile, newBaseline);
+                    _writer.Write(baselineFile, newBaseline);
                 }
                 else
                 {
@@ -91,17 +85,6 @@ public class SquiggleCop : Task
         }
     }
 
-    private static void WriteBaselineFile(string path, string contents)
-    {
-        string? parent = Directory.GetParent(path)?.FullName;
-        if (parent is not null && !Directory.Exists(parent))
-        {
-            Directory.CreateDirectory(parent);
-        }
-
-        File.WriteAllText(path, contents);
-    }
-
     private string ValidateBaselineFile(ITaskItem[] baselineFiles)
     {
         if (baselineFiles.Length > 1)
@@ -112,9 +95,9 @@ public class SquiggleCop : Task
         return baselineFiles[0].ItemSpec;
     }
 
-    private static bool AreDifferent(string path, string contents)
+    private bool AreDifferent(string path, string contents)
     {
-        return !File.Exists(path) || !string.Equals(File.ReadAllText(path), contents, StringComparison.Ordinal);
+        return !File.Exists(path) || _differ.Diff(File.ReadAllText(path), contents).HasDifferences;
     }
 
     private void LogWarning(string warningCode, string message, params object[] messageArgs)

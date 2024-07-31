@@ -1,4 +1,8 @@
+using DiffPlex.DiffBuilder;
+using DiffPlex.DiffBuilder.Model;
+
 using Microsoft.CodeAnalysis.Sarif;
+
 using Newtonsoft.Json;
 
 namespace SquiggleCop.Common;

@@ -8,6 +8,7 @@
 |   |   |   |-- Cocona.Core.dll
 |   |   |   |-- Cocona.dll
 |   |   |   |-- Dia2Lib.dll
+|   |   |   |-- DiffPlex.dll
 |   |   |   |-- DotnetToolSettings.xml
 |   |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
 |   |   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll

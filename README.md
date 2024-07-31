@@ -266,3 +266,17 @@ property:
 
 _Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
 (CC BY 3.0)_
+
+### Encodings & line endings
+
+Baseline files are written in UTF-8 encoding without a BOM. Baseline files also use the `\n` line ending on all
+platforms. SquiggleCop's own diffing algorithm also ignores end of line differences to avoid unnecessary issues, however
+depending on your `.gitattributes` settings line endings may be normalized to other values. If Git's line ending
+normalization is causing issues, consider setting the following in your `.gitattributes` file:
+
+```
+# Store SquiggleCop baselines as lf regardless of platform
+SquiggleCop.Baseline.yaml text eol=lf
+```
+
+And then run `git add --renormalize .` to update Git with the re-normalized files.

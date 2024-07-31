@@ -14,9 +14,9 @@ public class Serializer
     private readonly ISerializer _serializer = new SerializerBuilder()
         .WithNamingConvention(PascalCaseNamingConvention.Instance)
         .WithEventEmitter(next => new FlowEverythingEmitter(next))
+        .WithNewLine("\n")
         .Build();
 
-    // TODO: Consider using a TextWriter or something for better perf.
     /// <summary>
     /// Serializes the given value to a string.
     /// </summary>

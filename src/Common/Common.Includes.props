@@ -22,9 +22,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)/Serializer.cs">
       <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/BaselineDiff.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/BaselineDiffer.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/BaselineWriter.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DiffPlex" />
     <PackageReference Include="Sarif.Sdk" />
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
