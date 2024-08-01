@@ -1,6 +1,4 @@
-<div align="center">
- <img alt="SquiggleCop logo" height="200px" src="https://raw.githubusercontent.com/MattKotsenas/SquiggleCop/main/icon.png">
-</div>
+![Icon](https://raw.githubusercontent.com/MattKotsenas/SquiggleCop/main/icon.png)
 
 # SquiggleCop
 
@@ -166,7 +164,7 @@ Either use the SquiggleCop CLI to create a new baseline, or enable automatic bas
 If autobaseline is on, be sure to review any changes to the baseline file before committing your code.
 
 > [!CAUTION]
-> If you turn autobaseline on, be sure to turn it off in CI. Otherwise SquiggleCop may not be able to warn about
+> If you turn auto-baseline on, be sure to turn it off in CI. Otherwise SquiggleCop may not be able to warn about
 > potential issues!
 
 ## Anatomy of a baseline file
@@ -292,36 +290,30 @@ file. To specify a custom path to the baseline file, add an item to `AdditionalF
 
 ### TreatWarningsAsErrors
 
-Often, projects use `TreatWarningsAsErrors` in CI builds to prevent warnings from making into the main branch. Some
-projects go further and also enable it locally so that the CI and local development experience match.
+Often, projects use `TreatWarningsAsErrors` in CI builds to prevent warnings from entering the main branch.
 
 However, toggling TreatWarningsAsErrors _also_ changes the effective severity of analyzer diagnostics, which can lead to
 unnecessary churn in baseline files. If your project or development workflow toggles TreatWarningsAsErrors between CI
 and local development, also toggle the `SquiggleCop_Enabled` property based on the same logic.
 
-Here's an example project that toggles TreatWarningsAsErrors based on the
+Here's a sample that toggles TreatWarningsAsErrors based on the
 [`ContinuousIntegrationBuild`](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild)
 property:
 
 ```xml
 <Project>
   <PropertyGroup>
-    <PedanticMode Condition=" '$(_PedanticMode)' == '' ">$([MSBuild]::ValueOrDefault('$(ContinuousIntegrationBuild)', 'false'))</PedanticMode>
+    <PedanticMode Condition=" '$(PedanticMode)' == '' ">$([MSBuild]::ValueOrDefault('$(ContinuousIntegrationBuild)', 'false'))</PedanticMode>
     <TreatWarningsAsErrors>$(PedanticMode)</TreatWarningsAsErrors>
     <SquiggleCop_Enabled>$(PedanticMode)</SquiggleCop_Enabled>
   </PropertyGroup>
 </Project>
 ```
 
----
-
-_Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
-(CC BY 3.0)_
-
 ### Encodings & line endings
 
-Baseline files are written in UTF-8 encoding without a BOM. Baseline files also use the `\n` line ending on all
-platforms. SquiggleCop's own diffing algorithm also ignores end of line differences to avoid unnecessary issues, however
+Baseline files are written in UTF-8 encoding without a BOM. Baseline files use the `\n` line ending on all
+platforms. SquiggleCop's own diffing algorithm ignores end of line differences to avoid unnecessary issues, however
 depending on your `.gitattributes` settings line endings may be normalized to other values. If Git's line ending
 normalization is causing issues, consider setting the following in your `.gitattributes` file:
 
@@ -331,3 +323,8 @@ SquiggleCop.Baseline.yaml text eol=lf
 ```
 
 And then run `git add --renormalize .` to update Git with the re-normalized files.
+
+---
+
+_Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
+(CC BY 3.0)_
