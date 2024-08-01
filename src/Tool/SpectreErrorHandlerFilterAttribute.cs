@@ -3,7 +3,7 @@ using Cocona.Filters;
 
 namespace SquiggleCop.Tool;
 
-internal class SpectreErrorHandlerFilterAttribute : CommandFilterAttribute
+internal sealed class SpectreErrorHandlerFilterAttribute : CommandFilterAttribute
 {
     private readonly IAnsiConsole _console;
 

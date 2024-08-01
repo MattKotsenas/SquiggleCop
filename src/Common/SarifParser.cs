@@ -98,11 +98,11 @@ public class SarifParser
             yield return new DiagnosticConfig(
                 id: rule.Id,
                 title: rule.GetTitle(version),
-                category: rule.GetPropertyOrDefault("category", string.Empty),
+                category: rule.GetPropertyOrDefault("category", defaultValue: string.Empty),
                 defaultSeverity: defaultSeverity,
                 isEnabledByDefault: defaultConfiguration.Enabled,
                 effectiveSeverities: effectiveSeverities,
-                isEverSuppressed: rule.GetPropertyOrDefault("isEverSuppressed", false));
+                isEverSuppressed: rule.GetPropertyOrDefault("isEverSuppressed", defaultValue: false));
         }
     }
 }

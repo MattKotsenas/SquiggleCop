@@ -6,7 +6,7 @@ using Cocona.Command.Binder;
 
 namespace SquiggleCop.Tool;
 
-internal class SpectreParameterBindExceptionFilterAttribute : CommandFilterAttribute
+internal sealed class SpectreParameterBindExceptionFilterAttribute : CommandFilterAttribute
 {
     private readonly IAnsiConsole _console;
 

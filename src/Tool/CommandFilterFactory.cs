@@ -3,7 +3,7 @@ using Cocona.Filters;
 
 namespace SquiggleCop.Tool;
 
-internal class CommandFilterFactory<TCommandFilterAttribute> : IFilterFactory where TCommandFilterAttribute : ICommandFilter
+internal sealed class CommandFilterFactory<TCommandFilterAttribute> : IFilterFactory where TCommandFilterAttribute : ICommandFilter
 {
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {

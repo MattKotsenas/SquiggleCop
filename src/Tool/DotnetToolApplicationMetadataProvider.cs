@@ -4,7 +4,7 @@ using Cocona.Application;
 
 namespace SquiggleCop.Tool;
 
-internal class DotnetToolApplicationMetadataProvider : ICoconaApplicationMetadataProvider
+internal sealed class DotnetToolApplicationMetadataProvider : ICoconaApplicationMetadataProvider
 {
     public string GetDescription()
     {
