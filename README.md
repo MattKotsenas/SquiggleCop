@@ -14,7 +14,7 @@ There are many ways to configure diagnostic warning and error levels in a .NET b
 interact can be tricky to get correct. .NET / MSBuild support all these mechanisms (and probably more!) to configure
 what analyzers are enabled and at what severity level:
 
-- In-box analyzers ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-8))
+- Analyzers provided in the SDK ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-8))
 - Analyzer NuGet packages ([example](https://www.nuget.org/packages/roslynator.analyzers#readme-body-tab))
 - `.editorconfig` ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files#editorconfig))
 - `.globalconfig` ([docs](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files#global-analyzerconfig))
@@ -223,6 +223,57 @@ for different parts of the codebase. Note that inline suppressions will _not_ sh
 - `#pragma`
 - `[SuppressMessage]`
 - `<AnalysisLevel>`
+
+## Diagnosing baseline mismatches
+
+The easiest way to debug a baseline mismatch that occurs in CI but doesn't occur locally is to:
+
+1. Upload the SARIF files from the build
+2. Use the SquiggleCop CLI to generate a new baseline from the CI SARIF file and compare it to the checked in baseline
+
+### Uploading SARIF reports
+
+Upload your SARIF reports as pipeline artifacts to help narrow down issues.
+
+#### GitHub Actions
+
+```yaml
+- name: Upload SARIF logs
+  uses: actions/upload-artifact@v4
+  if: success() || failure() # Upload logs even if the build failed
+  with:
+    name: SARIF logs
+    path: ./artifacts/**/*.sarif # Modify as necessary to point to your sarif files
+```
+
+#### Azure DevOps
+
+```yaml
+- task: CopyFiles@2
+  displayName: 'Copy SARIF files to Artifact Staging'
+  condition: succeededOrFailed() # Upload logs even if the build failed
+  inputs:
+    contents: 'artifacts\**\*.sarif' # Modify as necessary to point to your sarif files
+    targetFolder: '$(Build.ArtifactStagingDirectory)\sarif'
+    cleanTargetFolder: true
+    overWrite: true
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish SARIF files as Artifacts'
+  condition: succeededOrFailed() # Upload logs even if the build failed
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)\sarif'
+    publishLocation: 'pipeline'
+    artifact: 'sarif'
+```
+
+### Common sources of baseline mismatches
+
+- Different MSBuild parameters locally vs CI
+  - Also check if settings are based off the `$(ContinuousIntegrationBuild)` property, which some CI providers set
+- Different SDK versions
+  - Use a [global.json](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json) to set the same SDK version
+  locally and in CI
 
 ## Advanced configuration
 

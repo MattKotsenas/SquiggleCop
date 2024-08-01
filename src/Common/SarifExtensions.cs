@@ -8,7 +8,7 @@ namespace SquiggleCop.Common;
 internal static class SarifExtensions
 {
     // Fist version that has the fix for https://github.com/dotnet/roslyn/issues/73070.
-    private static readonly Version Roslyn73070FixedVersion = new(4, 10, 0);
+    private static readonly Version Roslyn73070FixedVersion = new(4, 11, 0);
 
     public static T OrDefault<T>(this T? value) where T : ISarifNode, new()
     {

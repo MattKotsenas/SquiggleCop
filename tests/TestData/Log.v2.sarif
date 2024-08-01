@@ -565,9 +565,9 @@
       "tool": {
         "driver": {
           "name": "Microsoft (R) Visual C# Compiler",
-          "version": "4.10.0-3.24314.14 (259e82e9)",
-          "dottedQuadFileVersion": "4.10.0.0",
-          "semanticVersion": "4.10.0",
+          "version": "4.11.0-3.24324.9 (b6addf73)",
+          "dottedQuadFileVersion": "4.11.0.0",
+          "semanticVersion": "4.11.0",
           "language": "en-US",
           "rules": [
             {

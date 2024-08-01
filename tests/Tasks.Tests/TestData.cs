@@ -25,7 +25,7 @@ internal sealed class TestData
               "tool": {
                 "driver": {
                   "name": "Microsoft (R) Visual C# Compiler",
-                  "semanticVersion": "4.10.0",
+                  "semanticVersion": "4.11.0",
                   "rules": [
                     {
                       "id": "CA1000",
