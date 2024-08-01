@@ -272,6 +272,7 @@ Upload your SARIF reports as pipeline artifacts to help narrow down issues.
 - Different SDK versions
   - Use a [global.json](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json) to set the same SDK version
   locally and in CI
+  - New SDK feature versions can introduce new analyzers so we suggest limiting `rollForward` to patch updates, or disable entirely
 
 ## Advanced configuration
 
