@@ -24,7 +24,7 @@ internal static class VerifyExtensions
 
     public static SettingsTask ScrubPathSeparators(this SettingsTask settings)
     {
-        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        settings.CurrentSettings.ScrubLinesWithReplace(l => l.Replace('\\', '/'));
 
         return settings;
     }

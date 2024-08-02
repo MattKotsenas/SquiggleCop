@@ -2,6 +2,6 @@
   Lines: [
     Baseline is different (auto baselining...),
     ,
-    Baseline generated @ {TestRootPath}/output/SquiggleCop.Baseline.yaml
+    Baseline generated @ {TestRootPath}/SquiggleCop.v2.Baseline.yaml
   ]
 }

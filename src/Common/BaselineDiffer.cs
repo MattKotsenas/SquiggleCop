@@ -1,4 +1,6 @@
-﻿using DiffPlex.DiffBuilder;
+﻿using DiffPlex;
+using DiffPlex.Chunkers;
+using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 
 namespace SquiggleCop.Common;
@@ -11,7 +13,8 @@ namespace SquiggleCop.Common;
 /// </remarks>
 public class BaselineDiffer
 {
-    private readonly SideBySideDiffBuilder _diffBuilder = SideBySideDiffBuilder.Instance;
+    private readonly InlineDiffBuilder _diffBuilder = InlineDiffBuilder.Instance;
+    private readonly IChunker _chunker = new LineChunker();
 
     /// <summary>
     /// Diffs two baselines.
@@ -21,7 +24,7 @@ public class BaselineDiffer
     /// <returns>A <see cref="BaselineDiff"/> that holds the results of the diff.</returns>
     public BaselineDiff Diff(string expected, string actual)
     {
-        SideBySideDiffModel diff = _diffBuilder.BuildDiffModel(expected, actual, ignoreWhitespace: false, ignoreCase: false);
+        DiffPaneModel diff = _diffBuilder.BuildDiffModel(expected, actual, ignoreWhitespace: false, ignoreCase: false, _chunker);
         return new BaselineDiff(diff);
     }
 }

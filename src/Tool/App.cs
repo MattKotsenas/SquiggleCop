@@ -1,4 +1,8 @@
-﻿using Cocona;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.IO;
+
+using Cocona;
 using Cocona.Application;
 using Cocona.Builder;
 
@@ -7,13 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
 using SquiggleCop.Common;
+using SquiggleCop.Tool.Rendering;
 
 namespace SquiggleCop.Tool;
 
 /// <summary>
 /// Configure and create the <see cref="CoconaApp"/>.
 /// </summary>
-public static class AppBuilder
+public static class App
 {
     /// <summary>
     /// Create a new instance of <see cref="CoconaApp"/>.
@@ -44,6 +49,7 @@ public static class AppBuilder
         builder.Services.AddSingleton<Serializer>();
         builder.Services.AddSingleton<BaselineDiffer>();
         builder.Services.AddSingleton<BaselineWriter>();
+        builder.Services.AddRenderers();
 
         configure(builder);
 
@@ -60,11 +66,14 @@ public static class AppBuilder
     private static async Task<int> GenerateAsync(
         SarifParser parser,
         Serializer serializer,
+        BaselineDiffer differ,
         BaselineWriter writer,
+        ReportRenderer renderer,
         IAnsiConsole console,
         [Option('a', Description = "Automatically update baseline if necessary")] bool autoBaseline,
         [Argument(Description = "The SARIF log to generate a baseline for")] string sarif,
-        [Option('o', Description = "The output path for the baseline file")] string? output)
+        [Option('o', Description = "The output path for the baseline file")] string? output,
+        [Option('c', Description = "Number of context lines to use in the diff")][Range(1, 100)] int context = 3)
     {
         if (!File.Exists(sarif))
         {
@@ -72,11 +81,6 @@ public static class AppBuilder
         }
 
         output = ValidateOutputPath(output);
-
-        if (!autoBaseline)
-        {
-            throw new NotImplementedException("Manual baseline creation is not yet implemented. Use `--auto-baseline` and your source control system to review changes for now.");
-        }
 
         try
         {
@@ -88,16 +92,24 @@ public static class AppBuilder
             }
 
             string newBaseline = serializer.Serialize(configs);
-            await writer.WriteAsync(output, newBaseline).ConfigureAwait(false);
+
+            BaselineDiff diff = differ.Diff(await ReadBaselineAsync(output).ConfigureAwait(false), newBaseline);
+
+            renderer.Render(diff, showDiff: !autoBaseline, context);
+
+            if (autoBaseline)
+            {
+                await writer.WriteAsync(output, newBaseline).ConfigureAwait(false);
+                console.MarkupLineInterpolated(CultureInfo.InvariantCulture, $"[green]Baseline generated[/] @ [link=file://{Path.GetFullPath(output)}]{output}[/]");
+                return ExitCodes.Success;
+            }
+
+            return !diff.HasDifferences ? ExitCodes.Success : ExitCodes.BaselineMismatch;
         }
         catch (UnsupportedVersionException ex)
         {
             throw new SarifInvalidException($"SARIF file is invalid. {ex.Message}", ex);
         }
-
-        console.MarkupLine($"[green]Baseline generated[/] @ {output}");
-
-        return ExitCodes.Success;
     }
 
     private static string ValidateOutputPath(string? path)
@@ -111,5 +123,10 @@ public static class AppBuilder
         }
 
         return path;
+    }
+
+    private static async Task<string> ReadBaselineAsync(string path)
+    {
+        return File.Exists(path) ? await File.ReadAllTextAsync(path).ConfigureAwait(false) : string.Empty;
     }
 }

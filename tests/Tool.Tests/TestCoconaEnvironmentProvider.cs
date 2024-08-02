@@ -2,7 +2,7 @@
 
 namespace SquiggleCop.Tool.Tests;
 
-internal class TestCoconaEnvironmentProvider : ICoconaEnvironmentProvider
+internal sealed class TestCoconaEnvironmentProvider : ICoconaEnvironmentProvider
 {
     private readonly string[] _args;
 

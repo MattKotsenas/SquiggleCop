@@ -1,3 +1,3 @@
 ﻿using SquiggleCop.Tool;
 
-await AppBuilder.Create().RunAsync().ConfigureAwait(false);
+await App.Create().RunAsync().ConfigureAwait(false);

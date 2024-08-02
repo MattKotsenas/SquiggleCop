@@ -1,10 +1,6 @@
 ﻿{
   Lines: [
-    NotImplementedException: Manual baseline creation is not yet implemented. Use `--auto-baseline` and your source control system to review changes for now.,
-      at async Task<int> GenerateAsync(SarifParser parser, Serializer serializer, BaselineWriter writer, IAnsiConsole console, bool autoBaseline, string sarif, string output) in AppBuilder.cs:78,
-      at async ValueTask<int> DispatchAsync(CommandDispatchContext ctx)                                                                                                                           ,
-      at async ValueTask<int> OnCommandExecutionAsync(CoconaCommandExecutingContext ctx, CommandExecutionDelegate next) in SpectreParameterBindExceptionFilterAttribute.cs:22                     ,
-      at async ValueTask<int> OnCommandExecutionAsync(CoconaCommandExecutingContext ctx, CommandExecutionDelegate next) in SpectreErrorHandlerFilterAttribute.cs:19                               
+    Error: SARIF file is invalid. Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.
   ],
-  ExitCode: -1
+  ExitCode: -11
 }

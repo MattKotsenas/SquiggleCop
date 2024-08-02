@@ -120,10 +120,19 @@ this command:
 dotnet tool install SquiggleCop.Tool
 ```
 
-then generate a baseline like this:
+To generate or diff a new baseline, run the `generate` command like this:
 
-```powershell
-dotnet squigglecop generate ./path/to/diagnostics.sarif --auto-baseline
+```
+Usage: dotnet squigglecop generate [--auto-baseline] [--output <String>] [--context <Int32>] [--help] sarif
+
+Arguments:
+  0: sarif    The SARIF log to generate a baseline for (Required)
+
+Options:
+  -a, --auto-baseline      Automatically update baseline if necessary
+  -o, --output <String>    The output path for the baseline file
+  -c, --context <Int32>    Number of context lines to use in the diff (Default: 3)
+  -h, --help               Show help message
 ```
 
 ### MSBuild Tasks

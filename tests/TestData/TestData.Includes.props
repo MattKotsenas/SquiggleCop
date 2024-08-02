@@ -7,5 +7,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Log.v1.sarif" Link="TestData/Log.v1.sarif" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Log.v2.sarif" Link="TestData/Log.v2.sarif" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Log.old.v2.sarif" Link="TestData/Log.old.v2.sarif" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/SquiggleCop.v2.Baseline.yaml" Link="TestData/SquiggleCop.v2.Baseline.yaml" />
   </ItemGroup>
 </Project>
