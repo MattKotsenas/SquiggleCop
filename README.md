@@ -86,30 +86,11 @@ development processes.
 
 ## Getting Started
 
-### Enabling SARIF logs
+### Using SARIF logs
 
-SquiggleCop uses [SARIF](https://sarifweb.azurewebsites.net/) v2.1 files to work its magic. If you aren't already
-producing SARIF files as part of your build, set the
-[`ErrorLog`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog)
-property, either in a
-[Directory.Build.props](https://learn.microsoft.com/en-us/visualstudio/msbuild/customize-by-directory?view=vs-2022)
-so it automatically applies to all projects:
-
-```xml
-<ErrorLog>$(MSBuildProjectFile).diagnostics.sarif,version=2.1</ErrorLog>
-```
-
-> [!TIP]
-> We recommend you add `*.sarif` to your `.gitignore` file
-
-or on the command-line for ad-hoc validation:
-
-```powershell
-dotnet build -p:ErrorLog=diagnostics.sarif%2cversion=2.1
-```
-
-> [!IMPORTANT]
-> The comma or semi-colon character in the log path must be XML-escaped
+SquiggleCop uses [SARIF](https://sarifweb.azurewebsites.net/) v2.1 files to work its magic. SquiggleCop automatically
+enables SARIF logs if needed and places them in the `obj/` folder. If you want / need to customize the SARIF output
+path, see [Set the SARIF output path](#set-the-sarif-output-path).
 
 ### CLI Tool
 
@@ -284,6 +265,28 @@ Upload your SARIF reports as pipeline artifacts to help narrow down issues.
   - New SDK feature versions can introduce new analyzers so we suggest limiting `rollForward` to patch updates, or disable entirely
 
 ## Advanced configuration
+
+### Set the SARIF output path
+
+If the [`ErrorLog`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog)
+property is unset, SquiggleCop sets it just before the `CoreCompile` target. To set a custom SARIF output path, set the
+property to something like this:
+
+```xml
+<ErrorLog>$(MSBuildProjectFile).sarif,version=2.1</ErrorLog>
+```
+
+> [!TIP]
+> We recommend you add `*.sarif` to your `.gitignore` file
+
+or set the property on the command-line as part of ad-hoc validation:
+
+```powershell
+dotnet build -p:ErrorLog=diagnostics.sarif%2cversion=2.1
+```
+
+> [!IMPORTANT]
+> The comma or semi-colon character in the log path must be XML-escaped
 
 ### Alternate baseline paths
 

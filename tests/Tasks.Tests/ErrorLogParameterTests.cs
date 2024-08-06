@@ -8,6 +8,10 @@ public class ErrorLogParameterTests : TestBase
     public async Task NoErrorLogReportsWarning()
     {
         ProjectCreator.Templates.SimpleBuild()
+            .Target(name: "_UnsetErrorLogPropertyBeforeSquiggleCopRuns", beforeTargets: "AfterCompile")
+                .TaskMessage("Unsetting ErrorLog...")
+                .TargetPropertyGroup()
+                    .TargetProperty(name: "ErrorLog", unevaluatedValue: string.Empty)
             .Save(Path.Combine(TestRootPath, "project.csproj"))
             .TryBuild(restore: true, out bool result, out BuildOutput output);
 
