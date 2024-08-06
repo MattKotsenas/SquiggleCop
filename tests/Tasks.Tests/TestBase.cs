@@ -14,7 +14,7 @@ public abstract class TestBase : IDisposable
 
         Uri feed = new(new FileInfo(Assembly.GetExecutingAssembly().Location).Directory!.FullName);
 
-        Repository = PackageRepository.Create(TestRootPath, new Uri("https://api.nuget.org/v3/index.json"), feed);
+        Repository = PackageRepository.Create(TestRootPath, feed);
     }
 
     protected string TestRootPath { get; }
