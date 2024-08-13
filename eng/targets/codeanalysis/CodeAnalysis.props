@@ -3,6 +3,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NuGetAudit>true</NuGetAudit>
     <TreatWarningsAsErrors Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">true</TreatWarningsAsErrors>
     <MSBuildTreatWarningsAsErrors Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">true</MSBuildTreatWarningsAsErrors>
   </PropertyGroup>

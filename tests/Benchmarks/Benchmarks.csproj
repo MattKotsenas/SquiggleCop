@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <RootNamespace>SquiggleCop.Benchmarks</RootNamespace>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject><!-- Don't include xUnit-related dependencies -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+
+  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
+  <Import Project="$(RepoRoot)/tests/TestData/TestData.Includes.props" />
+
+</Project>

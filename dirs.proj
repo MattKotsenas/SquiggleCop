@@ -6,5 +6,6 @@
     <ProjectReference Include="tests/Common.Tests/Common.Tests.csproj" />
     <ProjectReference Include="tests/Tasks.Tests/Tasks.Tests.csproj" />
     <ProjectReference Include="tests/Tool.Tests/Tool.Tests.csproj" />
+    <ProjectReference Include="tests/Benchmarks/Benchmarks.csproj" />
   </ItemGroup>
 </Project>
