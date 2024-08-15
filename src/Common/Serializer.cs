@@ -13,8 +13,9 @@ public class Serializer
 {
     private readonly ISerializer _serializer = new SerializerBuilder()
         .WithNamingConvention(PascalCaseNamingConvention.Instance)
-        .WithEventEmitter(next => new FlowEverythingEmitter(next))
-        .WithNewLine("\n")
+        .DisableAliases() // We don't use aliases, so disable checking to improve performance -- https://github.com/aaubry/YamlDotNet/wiki/Serialization.Serializer#disablealiases
+        .WithEventEmitter(next => new FlowEverythingEmitter(next)) // Use YAML flow so that rule diffs are always a single line
+        .WithNewLine("\n") // Normalize newlines to prevent diff churn
         .Build();
 
     /// <summary>
