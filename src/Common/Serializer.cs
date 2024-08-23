@@ -4,6 +4,7 @@ using YamlDotNet.Serialization.EventEmitters;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization.TypeInspectors;
+using YamlDotNet.Serialization.ObjectGraphVisitors;
 
 namespace SquiggleCop.Common;
 
@@ -19,7 +20,9 @@ public class Serializer
         .WithNewLine("\n") // Normalize newlines to prevent diff churn
 
         // BEGIN PERF optimizations; see //src/Common/YamlDotNet/README.md for more details.
-        .WithTypeInspector(inner => new FastTypeInspector())
+        .WithTypeInspector(_ => new FastTypeInspector())
+        .WithEmissionPhaseObjectGraphVisitor(args => new FastSerializationObjectGraphVisitor(args.InnerVisitor, args.TypeConverters, args.NestedObjectSerializer))
+        .WithoutEmissionPhaseObjectGraphVisitor<CustomSerializationObjectGraphVisitor>()
         // END PERF
 
         .Build();
