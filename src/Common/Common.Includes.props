@@ -31,6 +31,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)/BaselineWriter.cs">
       <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/YamlDotNet/FastTypeInspector.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

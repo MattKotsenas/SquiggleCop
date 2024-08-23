@@ -3,6 +3,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.EventEmitters;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Core;
+using YamlDotNet.Serialization.TypeInspectors;
 
 namespace SquiggleCop.Common;
 
@@ -16,6 +17,11 @@ public class Serializer
         .DisableAliases() // We don't use aliases, so disable checking to improve performance -- https://github.com/aaubry/YamlDotNet/wiki/Serialization.Serializer#disablealiases
         .WithEventEmitter(next => new FlowEverythingEmitter(next)) // Use YAML flow so that rule diffs are always a single line
         .WithNewLine("\n") // Normalize newlines to prevent diff churn
+
+        // BEGIN PERF optimizations; see //src/Common/YamlDotNet/README.md for more details.
+        .WithTypeInspector(inner => new FastTypeInspector())
+        // END PERF
+
         .Build();
 
     /// <summary>

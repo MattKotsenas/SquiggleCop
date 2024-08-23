@@ -8,7 +8,7 @@ namespace SquiggleCop.Benchmarks;
 [Config(typeof(Config))]
 public class Serializing
 {
-    private static readonly TestDataReader Reader = new(typeof(Program).Namespace!);
+    private static readonly TestDataReader Reader = new(typeof(Serializing).Namespace!);
 
     private readonly IReadOnlyCollection<DiagnosticConfig> _configs = CreateConfigs();
     private readonly Serializer _serializer = new();
