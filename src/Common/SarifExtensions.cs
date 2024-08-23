@@ -1,7 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using Microsoft.CodeAnalysis.Sarif;
 
-using Microsoft.CodeAnalysis.Sarif;
 
 namespace SquiggleCop.Common;
 
@@ -54,7 +52,8 @@ internal static class SarifExtensions
     {
         Guard.ThrowIfNull(run);
 
-        return [.. run.Tool?.Driver?.Rules ?? []];
+        IList<ReportingDescriptor>? rules = run.Tool?.Driver?.Rules;
+        return rules is not null ? rules.AsReadOnly() : [];
     }
 
     public static IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
