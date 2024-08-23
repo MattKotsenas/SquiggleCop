@@ -1,8 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-
-using DiffPlex.DiffBuilder;
-using DiffPlex.DiffBuilder.Model;
 
 using SquiggleCop.Common.Sarif;
 
@@ -66,7 +63,7 @@ public class SarifParser
     }
 
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0042:Do not use blocking calls in an async method", Justification = "This is provided for symmetry, as I'm assuming eventually the API will become actually async.")]
+    [SuppressMessage("Design", "MA0042:Do not use blocking calls in an async method", Justification = "This is provided for symmetry, as I'm assuming eventually the API will become actually async.")]
     public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
     {
         return Task.FromResult(Parse(stream));
@@ -102,17 +99,22 @@ public class SarifParser
             }
 
             ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration;
-
             DiagnosticSeverity defaultSeverity = defaultConfiguration.Level.ToDiagnosticSeverity();
-            DiagnosticSeverity[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity()];
+            HashSet<DiagnosticSeverity> effectiveSeverities =
+            [
+                defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity(),
+            ];
 
-            if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
+            if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? cos))
             {
-                ReportingConfiguration[] rcs = co.Select(c => c.Configuration).ToArray();
-                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToDiagnosticSeverity()).ToArray();
+                effectiveSeverities.Clear();
+                foreach (ConfigurationOverride co in cos)
+                {
+                    effectiveSeverities.Add(co.Configuration.GetEffectiveSeverity().ToDiagnosticSeverity());
+                }
             }
 
-            yield return new DiagnosticConfig()
+            yield return new DiagnosticConfig
             {
                 Id = rule.Id,
                 Title = rule.GetTitle(version),

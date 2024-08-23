@@ -59,7 +59,7 @@
     +- {Id: CA1310, Title: Specify StringComparison for correctness, Category: Globalization, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], IsEverSuppressed: true},
     +- {Id: CA1311, Title: Specify a culture or use an invariant version, Category: Globalization, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], IsEverSuppressed: true},
     +- {Id: CA1401, Title: P/Invokes should not be visible, Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], IsEverSuppressed: false},
-    +- {Id: CA1416, Title: Validate platform compatibility, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false},
+    +- {Id: CA1416, Title: Validate platform compatibility, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Error], IsEverSuppressed: false},
     +- {Id: CA1417, Title: Do not use 'OutAttribute' on string parameters for P/Invokes, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false},
     +- {Id: CA1418, Title: Use valid platform string, Category: Interoperability, DefaultSeverity: Warning, IsEnabledByDefault: true, EffectiveSeverities: [Warning], IsEverSuppressed: false},
     +- {Id: CA1419, Title: Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle', Category: Interoperability, DefaultSeverity: Note, IsEnabledByDefault: true, EffectiveSeverities: [Note], ,

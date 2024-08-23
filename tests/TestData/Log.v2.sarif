@@ -28404,6 +28404,35 @@
           "ruleConfigurationOverrides": [
             {
               "descriptor": {
+                "id": "CA1416",
+                "index": 57
+              },
+              "configuration": {
+                "level": "error"
+              }
+            },
+
+            // --- BEGIN Duplicate test ---
+            {
+              "descriptor": {
+                "id": "CA1000"
+              },
+              "configuration": {
+                "level": "note"
+              }
+            },
+            {
+              "descriptor": {
+                "id": "CA1000"
+              },
+              "configuration": {
+                "level": "note"
+              }
+            },
+            // --- END Duplicate test ---
+
+            {
+              "descriptor": {
                 "id": "MA0026",
                 "index": 432
               },
