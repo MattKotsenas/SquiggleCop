@@ -8,7 +8,7 @@ namespace SquiggleCop.Benchmarks;
 [Config(typeof(Config))]
 public class EndToEnd
 {
-    private static readonly TestDataReader Reader = new(typeof(Program).Namespace!);
+    private static readonly TestDataReader Reader = new(typeof(EndToEnd).Namespace!);
 
     private readonly BaselineDiffer _differ = new();
     private readonly SarifParser _parser = new();

@@ -9,7 +9,7 @@ namespace SquiggleCop.Benchmarks;
 [Config(typeof(Config))]
 public class SarifParsing
 {
-    private static readonly TestDataReader Reader = new(typeof(Program).Namespace!);
+    private static readonly TestDataReader Reader = new(typeof(SarifParsing).Namespace!);
 
     private Stream _stream = null!;
     private readonly SarifParser _parser = new();
