@@ -46,3 +46,15 @@
 |   |   |   |   |-- lib
 |   |   |   |   |   |-- net6.0
 |   |   |   |   |   |   |-- System.Text.Encoding.CodePages.dll
+|   |-- net8.0
+|   |   |-- Dia2Lib.dll
+|   |   |-- DiffPlex.dll
+|   |   |-- Microsoft.Diagnostics.FastSerialization.dll
+|   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
+|   |   |-- Newtonsoft.Json.dll
+|   |   |-- Sarif.dll
+|   |   |-- SquiggleCop.Tasks.deps.json
+|   |   |-- SquiggleCop.Tasks.dll
+|   |   |-- SquiggleCop.Tasks.xml
+|   |   |-- TraceReloggerLib.dll
+|   |   |-- YamlDotNet.dll

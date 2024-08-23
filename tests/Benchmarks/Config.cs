@@ -16,6 +16,11 @@ public class Config : ManualConfig
         AddJob(Job
             .ShortRun
             .WithToolchain(InProcessEmitToolchain.Instance)
+            .WithRuntime(CoreRuntime.Core80));
+
+        AddJob(Job
+            .ShortRun
+            .WithToolchain(InProcessEmitToolchain.Instance)
             .WithRuntime(CoreRuntime.Core60));
 
         AddJob(Job

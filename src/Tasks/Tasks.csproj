@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Build settings">
-    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>net472;net6.0;net8.0</TargetFrameworks>
     <RootNamespace>SquiggleCop.Tasks</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
     <IsPackable>true</IsPackable>
