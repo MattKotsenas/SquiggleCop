@@ -1,4 +1,6 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.Diagnostics;
+
+using Microsoft.Build.Framework;
 
 using Newtonsoft.Json;
 
@@ -41,6 +43,21 @@ public class SquiggleCop : Task
     /// </summary>
     /// <returns><see langword="true" />, if successful</returns>
     public override bool Execute()
+    {
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        try
+        {
+            return ExecuteCore();
+        }
+        finally
+        {
+            stopwatch.Stop();
+
+            Log.LogMessage(MessageImportance.Low, "SquiggleCop task completed in {0}ms", stopwatch.ElapsedMilliseconds);
+        }
+    }
+
+    private bool ExecuteCore()
     {
         if (ErrorLog is null)
         {
