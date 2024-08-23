@@ -1,3 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 
@@ -13,6 +16,7 @@ namespace SquiggleCop.Common;
 public class SarifParser
 {
     private static readonly Version MinimumCompilerVersion = new(4, 8, 0);
+    private const int MaxDiagnosticSeverities = 4; // Keep in-sync with the value of `Enum.GetValues(typeof(DiagnosticSeverity)).Length`
 
     /// <summary>
     /// Parses the SARIF log from the given stream and returns the diagnostic configurations.
@@ -54,7 +58,7 @@ public class SarifParser
     }
 
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "MA0042:Do not use blocking calls in an async method", Justification = "This is provided for symmetry, as I'm assuming eventually the API will become actually async.")]
+    [SuppressMessage("Design", "MA0042:Do not use blocking calls in an async method", Justification = "This is provided for symmetry, as I'm assuming eventually the API will become actually async.")]
     public Task<IReadOnlyCollection<DiagnosticConfig>> ParseAsync(Stream stream)
     {
         return Task.FromResult(Parse(stream));
@@ -87,12 +91,20 @@ public class SarifParser
             ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration.OrDefault();
 
             DiagnosticSeverity defaultSeverity = defaultConfiguration.Level.ToDiagnosticSeverity();
-            DiagnosticSeverity[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity()];
 
-            if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
+            HashSet<DiagnosticSeverity> effectiveSeverities = new(MaxDiagnosticSeverities)
             {
-                ReportingConfiguration[] rcs = co.Select(c => c.Configuration.OrDefault()).ToArray();
-                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToDiagnosticSeverity()).ToArray();
+                defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity(),
+            };
+
+            if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? cos))
+            {
+                effectiveSeverities.Clear();
+
+                foreach (ConfigurationOverride co in cos)
+                {
+                    effectiveSeverities.Add(co.Configuration.OrDefault().GetEffectiveSeverity().ToDiagnosticSeverity());
+                }
             }
 
             yield return new DiagnosticConfig()
@@ -102,7 +114,7 @@ public class SarifParser
                 Category = rule.GetPropertyOrDefault("category", defaultValue: string.Empty),
                 DefaultSeverity = defaultSeverity,
                 IsEnabledByDefault = defaultConfiguration.Enabled,
-                EffectiveSeverities = effectiveSeverities,
+                EffectiveSeverities = effectiveSeverities.ToArray(),
                 IsEverSuppressed = rule.GetPropertyOrDefault("isEverSuppressed", defaultValue: false),
             };
         }
