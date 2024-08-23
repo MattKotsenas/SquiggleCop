@@ -5,6 +5,7 @@ using YamlDotNet.Core.Events;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization.TypeInspectors;
 using YamlDotNet.Serialization.ObjectFactories;
+using YamlDotNet.Serialization.ObjectGraphVisitors;
 using YamlDotNet.Serialization.ObjectGraphTraversalStrategies;
 
 namespace SquiggleCop.Common;
@@ -32,7 +33,9 @@ public class Serializer
             // BEGIN PERF optimizations; see //src/Common/YamlDotNet/README.md for more details.
             .WithTypeInspector(inner => new FastTypeInspector())
             .WithObjectGraphTraversalStrategyFactory((typeInspector, typeResolver, typeConverters, maxRecursion) => new FastObjectGraphTraversalStrategy(typeInspector, typeResolver, maxRecursion, namingConvention, new FastObjectFactory()))
-            // END PERF
+            .WithEmissionPhaseObjectGraphVisitor(args => new FastSerializationObjectGraphVisitor(args.InnerVisitor, args.TypeConverters, args.NestedObjectSerializer))
+            .WithoutEmissionPhaseObjectGraphVisitor<CustomSerializationObjectGraphVisitor>()
+        // END PERF
 
         .Build();
     }
