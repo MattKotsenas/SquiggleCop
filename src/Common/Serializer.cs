@@ -4,6 +4,8 @@ using YamlDotNet.Serialization.EventEmitters;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization.TypeInspectors;
+using YamlDotNet.Serialization.ObjectFactories;
+using YamlDotNet.Serialization.ObjectGraphTraversalStrategies;
 
 namespace SquiggleCop.Common;
 
@@ -12,17 +14,28 @@ namespace SquiggleCop.Common;
 /// </summary>
 public class Serializer
 {
-    private readonly ISerializer _serializer = new SerializerBuilder()
-        .WithNamingConvention(PascalCaseNamingConvention.Instance)
-        .DisableAliases() // We don't use aliases, so disable checking to improve performance -- https://github.com/aaubry/YamlDotNet/wiki/Serialization.Serializer#disablealiases
-        .WithEventEmitter(next => new FlowEverythingEmitter(next)) // Use YAML flow so that rule diffs are always a single line
-        .WithNewLine("\n") // Normalize newlines to prevent diff churn
+    private readonly ISerializer _serializer;
 
-        // BEGIN PERF optimizations; see //src/Common/YamlDotNet/README.md for more details.
-        .WithTypeInspector(inner => new FastTypeInspector())
-        // END PERF
+    /// <summary>
+    /// Creates a new instance of the <see cref="Serializer"/> class.
+    /// </summary>
+    public Serializer()
+    {
+        INamingConvention namingConvention = PascalCaseNamingConvention.Instance;
+
+        _serializer = new SerializerBuilder()
+            .WithNamingConvention(namingConvention)
+            .DisableAliases() // We don't use aliases, so disable checking to improve performance -- https://github.com/aaubry/YamlDotNet/wiki/Serialization.Serializer#disablealiases
+            .WithEventEmitter(next => new FlowEverythingEmitter(next)) // Use YAML flow so that rule diffs are always a single line
+            .WithNewLine("\n") // Normalize newlines to prevent diff churn
+
+            // BEGIN PERF optimizations; see //src/Common/YamlDotNet/README.md for more details.
+            .WithTypeInspector(inner => new FastTypeInspector())
+            .WithObjectGraphTraversalStrategyFactory((typeInspector, typeResolver, typeConverters, maxRecursion) => new FastObjectGraphTraversalStrategy(typeInspector, typeResolver, maxRecursion, namingConvention, new FastObjectFactory()))
+            // END PERF
 
         .Build();
+    }
 
     /// <summary>
     /// Serializes the given value to a string.

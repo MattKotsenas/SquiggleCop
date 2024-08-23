@@ -34,6 +34,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)/YamlDotNet/FastTypeInspector.cs">
       <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/YamlDotNet/FastObjectFactory.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)/YamlDotNet/FastObjectGraphTraversalStrategy.cs">
+      <Visible Condition="'$(ShowCommonFiles)' != 'true'">false</Visible>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

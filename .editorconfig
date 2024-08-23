@@ -94,6 +94,9 @@ dotnet_diagnostic.MA0038.severity = none
 # IDE0290: Use primary constructor
 dotnet_diagnostic.IDE0290.severity = none
 
+# S3267: Loops should be simplified with "LINQ" expressions
+dotnet_diagnostic.S3267.severity = none
+
 #### C# Coding Conventions ####
 [*.cs]
 
