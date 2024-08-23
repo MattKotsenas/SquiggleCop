@@ -65,6 +65,18 @@ internal static class SarifExtensions
         return !rc.Enabled ? FailureLevel.None : rc.Level;
     }
 
+    public static DiagnosticSeverity ToDiagnosticSeverity(this FailureLevel failureLevel)
+    {
+        return failureLevel switch
+        {
+            FailureLevel.Error => DiagnosticSeverity.Error,
+            FailureLevel.Warning => DiagnosticSeverity.Warning,
+            FailureLevel.Note => DiagnosticSeverity.Note,
+            FailureLevel.None => DiagnosticSeverity.None,
+            _ => throw new ArgumentOutOfRangeException(nameof(failureLevel)),
+        };
+    }
+
     public static bool IsCSharpCompiler(this ToolComponent? tool)
     {
         return string.Equals(tool?.Name, "Microsoft (R) Visual C# Compiler", StringComparison.Ordinal);

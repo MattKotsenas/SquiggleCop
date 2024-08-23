@@ -103,23 +103,25 @@ public class SarifParser
 
             ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration;
 
-            string defaultSeverity = defaultConfiguration.Level.ToString();
-            string[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToString()];
+            DiagnosticSeverity defaultSeverity = defaultConfiguration.Level.ToDiagnosticSeverity();
+            DiagnosticSeverity[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity()];
 
             if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
             {
                 ReportingConfiguration[] rcs = co.Select(c => c.Configuration).ToArray();
-                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToString()).ToArray();
+                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToDiagnosticSeverity()).ToArray();
             }
 
-            yield return new DiagnosticConfig(
-                id: rule.Id,
-                title: rule.GetTitle(version),
-                category: rule.Properties?.Category ?? "",
-                defaultSeverity: defaultSeverity,
-                isEnabledByDefault: defaultConfiguration.Enabled,
-                effectiveSeverities: effectiveSeverities,
-                isEverSuppressed: rule.Properties?.IsEverSuppressed ?? false);
+            yield return new DiagnosticConfig()
+            {
+                Id = rule.Id,
+                Title = rule.GetTitle(version),
+                Category = rule.Properties?.Category ?? "",
+                DefaultSeverity = defaultSeverity,
+                IsEnabledByDefault = defaultConfiguration.Enabled,
+                EffectiveSeverities = effectiveSeverities,
+                IsEverSuppressed = rule.Properties?.IsEverSuppressed ?? false,
+            };
         }
     }
 }
