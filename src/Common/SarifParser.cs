@@ -86,23 +86,25 @@ public class SarifParser
         {
             ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration.OrDefault();
 
-            string defaultSeverity = defaultConfiguration.Level.ToString();
-            string[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToString()];
+            DiagnosticSeverity defaultSeverity = defaultConfiguration.Level.ToDiagnosticSeverity();
+            DiagnosticSeverity[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToDiagnosticSeverity()];
 
             if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
             {
                 ReportingConfiguration[] rcs = co.Select(c => c.Configuration.OrDefault()).ToArray();
-                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToString()).ToArray();
+                effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToDiagnosticSeverity()).ToArray();
             }
 
-            yield return new DiagnosticConfig(
-                id: rule.Id,
-                title: rule.GetTitle(version),
-                category: rule.GetPropertyOrDefault("category", defaultValue: string.Empty),
-                defaultSeverity: defaultSeverity,
-                isEnabledByDefault: defaultConfiguration.Enabled,
-                effectiveSeverities: effectiveSeverities,
-                isEverSuppressed: rule.GetPropertyOrDefault("isEverSuppressed", defaultValue: false));
+            yield return new DiagnosticConfig()
+            {
+                Id = rule.Id,
+                Title = rule.GetTitle(version),
+                Category = rule.GetPropertyOrDefault("category", defaultValue: string.Empty),
+                DefaultSeverity = defaultSeverity,
+                IsEnabledByDefault = defaultConfiguration.Enabled,
+                EffectiveSeverities = effectiveSeverities,
+                IsEverSuppressed = rule.GetPropertyOrDefault("isEverSuppressed", defaultValue: false),
+            };
         }
     }
 }
