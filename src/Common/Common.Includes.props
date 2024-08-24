@@ -49,5 +49,6 @@
     <PackageReference Include="DiffPlex" />
     <PackageReference Include="Sarif.Sdk" />
     <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 </Project>

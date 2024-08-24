@@ -1,5 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
@@ -8,7 +15,318 @@ using Microsoft.CodeAnalysis.Sarif;
 
 using Newtonsoft.Json;
 
+using YamlDotNet.Core.Tokens;
+
 namespace SquiggleCop.Common;
+
+/// <summary>
+/// Converts a property bag (a JSON object whose keys have arbitrary names and whose values
+/// may be any JSON values) into a dictionary whose keys match the JSON object's
+/// property names, and whose values are of type <see cref="SerializedPropertyInfo"/>
+/// </summary>
+internal class PropertyBagConverter : System.Text.Json.Serialization.JsonConverter<PropertyBag>
+{
+    private static readonly SerializedPropertyInfoConverter Instance = new();
+
+    //public override bool CanConvert(Type objectType)
+    //{
+    //    return typeof(IDictionary<string, SerializedPropertyInfo>).IsAssignableFrom(objectType);
+    //}
+
+    //public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //{
+    //    IDictionary<string, SerializedPropertyInfo> dictionary = existingValue as IDictionary<string, SerializedPropertyInfo> ?? new Dictionary<string, SerializedPropertyInfo>();
+
+    //    reader.Read();
+
+    //    while (reader.TokenType == JsonToken.PropertyName)
+    //    {
+    //        string name = (string)reader.Value;
+    //        reader.Read();
+
+    //        SerializedPropertyInfo value = SerializedPropertyInfoConverter.Read(reader);
+    //        reader.Read();
+
+    //        dictionary[name] = value;
+    //    }
+
+    //    return dictionary;
+    //}
+
+    //public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //{
+    //    writer.WriteStartObject();
+
+    //    var propertyDictionary = (IDictionary<string, SerializedPropertyInfo>)value;
+    //    foreach (KeyValuePair<string, SerializedPropertyInfo> pair in propertyDictionary)
+    //    {
+    //        writer.WritePropertyName(pair.Key);
+    //        SerializedPropertyInfoConverter.Write(writer, pair.Value);
+    //    }
+
+    //    writer.WriteEndObject();
+    //}
+    public override PropertyBag? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        Dictionary<string, SerializedPropertyInfo> dictionary = new();
+
+        reader.Read();
+
+        while (reader.TokenType == JsonTokenType.PropertyName)
+        {
+            string name = reader.GetString()!;
+            reader.Read();
+
+            SerializedPropertyInfo value = Instance.Read(ref reader, typeof(SerializedPropertyInfo), options)!;
+            reader.Read();
+
+            dictionary[name] = value;
+        }
+
+        return null!;
+    }
+
+    public override void Write(Utf8JsonWriter writer, PropertyBag value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+internal class SerializedPropertyInfoConverter : System.Text.Json.Serialization.JsonConverter<SerializedPropertyInfo>
+{
+    //public static SerializedPropertyInfo Read(JsonReader reader)
+    //{
+    //    if (reader.TokenType == JsonToken.Null)
+    //    {
+    //        return null;
+    //    }
+    //    else
+    //    {
+    //        bool wasString = reader.TokenType == JsonToken.String;
+
+    //        var builder = new StringBuilder();
+    //        using (var w = new StringWriter(builder))
+    //        using (var writer = new JsonTextWriter(w))
+    //        {
+    //            writer.WriteToken(reader);
+    //        }
+
+    //        return new SerializedPropertyInfo(builder.ToString(), wasString);
+    //    }
+    //}
+
+    //public static void Write(JsonWriter writer, SerializedPropertyInfo value)
+    //{
+    //    SerializedPropertyInfo spi = value;
+
+    //    if (spi == null || spi.SerializedValue == null)
+    //    {
+    //        writer.WriteNull();
+    //    }
+    //    else
+    //    {
+    //        writer.WriteRawValue(spi.SerializedValue);
+    //    }
+    //}
+
+    //public override bool CanConvert(Type objectType)
+    //{
+    //    return objectType == typeof(SerializedPropertyInfo);
+    //}
+
+    //public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //{
+    //    return Read(reader);
+    //}
+
+    //public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //{
+    //    Write(writer, (SerializedPropertyInfo)value);
+    //}
+    public override SerializedPropertyInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? value = reader.GetString();
+
+        if (value is null)
+        {
+            return null;
+        }
+
+        bool wasString = reader.TokenType == JsonTokenType.String;
+
+        return new SerializedPropertyInfo(value, wasString);
+    }
+
+    public override void Write(Utf8JsonWriter writer, SerializedPropertyInfo value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+internal class SpyConverterFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return false;
+    }
+
+    public override System.Text.Json.Serialization.JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+internal class EnumConverterFactory : JsonConverterFactory
+{
+    private static readonly List<string> LegalTwoLetterWordsList = ["in"];
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        if (typeToConvert.IsEnum)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public override System.Text.Json.Serialization.JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        //Type[] typeArguments = type.GetGenericArguments();
+        //Type keyType = typeArguments[0];
+        //Type valueType = typeArguments[1];
+
+        System.Text.Json.Serialization.JsonConverter converter = (System.Text.Json.Serialization.JsonConverter)Activator.CreateInstance(
+            typeof(EnumConverter<>).MakeGenericType(typeToConvert),
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            args: [options],
+            culture: null)!;
+
+        return converter;
+    }
+
+    private sealed class EnumConverter<TEnum> : System.Text.Json.Serialization.JsonConverter<TEnum> where TEnum : struct, Enum
+    {
+        public EnumConverter(JsonSerializerOptions options)
+        {
+        }
+
+        public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return (TEnum)Enum.Parse(typeof(TEnum), ConvertToPascalCase(reader.GetString()!));
+        }
+
+        public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static string ConvertToPascalCase(string camelCaseName)
+        {
+            if (camelCaseName.Length == 1)
+            {
+                return camelCaseName.ToUpperInvariant();
+            }
+
+            int prefixCount = IsPrefixedWithTwoLetterAbbreviation(camelCaseName) ? 2 : 1;
+
+            return camelCaseName.Substring(0, prefixCount).ToUpperInvariant() + camelCaseName.Substring(prefixCount);
+        }
+
+        private static bool IsPrefixedWithTwoLetterAbbreviation(string name)
+        {
+            if (name.Length < 2)
+            {
+                return false;
+            }
+
+            if (LegalTwoLetterWordsList.Contains(name.Substring(0, 2)))
+            {
+                return false;
+            }
+
+            bool isPrefixedWithTwoLetterWord = char.IsUpper(name[0]) == char.IsUpper(name[1]);
+
+            if (name.Length == 2)
+            {
+                return isPrefixedWithTwoLetterWord;
+            }
+
+            return char.IsDigit(name[2]) || char.IsUpper(name[2]);
+        }
+    }
+}
+
+    internal class SarifVersionConverter : System.Text.Json.Serialization.JsonConverter<SarifVersion>
+{
+    public override SarifVersion Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.GetString().ConvertToSarifVersion();
+    }
+
+    public override void Write(Utf8JsonWriter writer, SarifVersion dateTimeValue, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+internal class DataContractResolver : DefaultJsonTypeInfoResolver
+{
+    [DataContract]
+    public class TestClass
+    {
+        [System.Text.Json.Serialization.JsonIgnore] // ignored by the custom resolver 
+        [DataMember(Name = "stringValue", Order = 2)]
+        public string String { get; set; }
+
+        [JsonPropertyName("BOOL_VALUE")] // ignored by the custom resolver 
+        [DataMember(Name = "boolValue", Order = 1)]
+        public bool Boolean { get; set; }
+
+        [JsonPropertyOrder(int.MaxValue)] // ignored by the custom resolver 
+        [DataMember(Name = "intValue", Order = 0)]
+        public int Int { get; set; }
+
+        [IgnoreDataMember]
+        public string Ignored { get; set; }
+    }
+
+    public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
+    {
+        JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
+
+        if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object &&
+            type.GetCustomAttribute<DataContractAttribute>() is not null)
+        {
+            jsonTypeInfo.Properties.Clear();
+
+            foreach (PropertyInfo propInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (propInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() is not null)
+                {
+                    continue;
+                }
+
+                DataMemberAttribute? attr = propInfo.GetCustomAttribute<DataMemberAttribute>();
+                JsonPropertyInfo jsonPropertyInfo = jsonTypeInfo.CreateJsonPropertyInfo(propInfo.PropertyType, attr?.Name ?? propInfo.Name);
+                jsonPropertyInfo.Order = attr?.Order ?? 0;
+                jsonPropertyInfo.Get =
+                    propInfo.CanRead
+                    ? propInfo.GetValue
+                    : null;
+
+                jsonPropertyInfo.Set = propInfo.CanWrite
+                    ? propInfo.SetValue
+                    : null;
+
+                jsonTypeInfo.Properties.Add(jsonPropertyInfo);
+            }
+        }
+
+        return jsonTypeInfo;
+    }
+}
 
 /// <summary>
 /// Parses SARIF logs to extract the diagnostic configurations.
@@ -17,6 +335,13 @@ public class SarifParser
 {
     private static readonly Version MinimumCompilerVersion = new(4, 8, 0);
     private const int MaxDiagnosticSeverities = 4; // Keep in-sync with the value of `Enum.GetValues(typeof(DiagnosticSeverity)).Length`
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        TypeInfoResolver = new DataContractResolver(),
+        Converters = { new SarifVersionConverter(), new EnumConverterFactory(), new SerializedPropertyInfoConverter(), new PropertyBagConverter(), new SpyConverterFactory() },
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+    };
 
     /// <summary>
     /// Parses the SARIF log from the given stream and returns the diagnostic configurations.
@@ -42,7 +367,8 @@ public class SarifParser
         SarifLog log;
         try
         {
-            log = SarifLog.Load(stream, deferred: true);
+            //log = SarifLog.Load(stream, deferred: true);
+            log = System.Text.Json.JsonSerializer.Deserialize<SarifLog>(stream, Options)!;
         }
         catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON"))
         {

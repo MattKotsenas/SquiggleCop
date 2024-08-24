@@ -75,24 +75,31 @@ public class SquiggleCop : Task
 
         try
         {
+            var stopwatch = Stopwatch.StartNew();
             using Stream stream = File.OpenRead(ErrorLog!);
+            Log.LogMessage(MessageImportance.Low, "Opening SARIF log '{0}' took {1}ms", ErrorLog, stopwatch.ElapsedMilliseconds);
 
             IReadOnlyCollection<DiagnosticConfig> configs = _parser.Parse(stream);
+            Log.LogMessage(MessageImportance.Low, "Parsing SARIF log '{0}' took {1}ms", ErrorLog, stopwatch.ElapsedMilliseconds);
 
             string newBaseline = _serializer.Serialize(configs);
+            Log.LogMessage(MessageImportance.Low, "Serializeing SARIF log '{0}' took {1}ms", ErrorLog, stopwatch.ElapsedMilliseconds);
 
-            if (AreDifferent(baselineFile, newBaseline))
+            var areDifferent = AreDifferent(baselineFile, newBaseline);
+            Log.LogMessage(MessageImportance.Low, "Comparing baseline files took {0}ms", stopwatch.ElapsedMilliseconds);
+            if (areDifferent)
             {
                 if (AutoBaseline)
                 {
                     _writer.Write(baselineFile, newBaseline);
+                    Log.LogMessage(MessageImportance.Low, "Writing SARIF log '{0}' took {1}ms", ErrorLog, stopwatch.ElapsedMilliseconds);
                 }
                 else
                 {
                     LogWarning(warningCode: DiagnosticIds.Baseline.Mismatch, "Baseline mismatch: {0}", baselineFile);
                 }
             }
-
+            stopwatch.Stop();
             return true;
         }
         catch (UnsupportedVersionException)
