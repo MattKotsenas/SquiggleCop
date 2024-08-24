@@ -149,6 +149,12 @@ internal class SerializedPropertyInfoConverter : System.Text.Json.Serialization.
             return new SerializedPropertyInfo(System.Text.Json.JsonSerializer.Serialize(arr), isString: false);
         }
 
+        if (reader.TokenType == JsonTokenType.StartObject)
+        {
+            string arr = JsonExtensions.ToRawString(ref reader);
+            return new SerializedPropertyInfo(System.Text.Json.JsonSerializer.Serialize(arr), isString: false);
+        }
+
         string? value = reader.GetString();
 
         if (value is null)
