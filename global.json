@@ -5,7 +5,6 @@
   },
   "msbuild-sdks": {
     "DotNet.ReproducibleBuilds.Isolated": "1.2.4",
-    "Microsoft.Build.NoTargets": "3.7.56",
     "Microsoft.Build.Traversal": "4.1.0"
   }
 }

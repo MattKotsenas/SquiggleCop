@@ -1,0 +1,10 @@
+﻿<Project>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/**/*.cs" Visible=" '$(ShowTestDataFiles)' == 'true' " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/**/*.sarif" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/SquiggleCop.v2.Baseline.yaml" />
+  </ItemGroup>
+</Project>

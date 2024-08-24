@@ -20,7 +20,7 @@ internal class TestDataReader
     public Stream Read(string path)
     {
         Assembly assembly = typeof(TestDataReader).Assembly;
-        string resourceName = $"{_namespace}.TestData.{path}";
+        string resourceName = $"{_namespace}.{path}";
 
         return assembly.GetManifestResourceStream(resourceName) ?? throw new FileNotFoundException($"Resource '{resourceName}' not found in assembly '{assembly.FullName}'");
     }

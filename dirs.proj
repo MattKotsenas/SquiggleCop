@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.Build.Traversal">
   <ItemGroup>
-    <ProjectReference Include="src/Common/Common.csproj" />
+    <ProjectReference Include="src/Common/Common.csproj" Condition=" '$(IsSlnGen)' == 'true' " />
     <ProjectReference Include="src/Tasks/Tasks.csproj" />
     <ProjectReference Include="src/Tool/Tool.csproj" />
+    <ProjectReference Include="Tests/TestData/TestData.csproj" Condition=" '$(IsSlnGen)' == 'true' " />
     <ProjectReference Include="tests/Common.Tests/Common.Tests.csproj" />
     <ProjectReference Include="tests/Tasks.Tests/Tasks.Tests.csproj" />
     <ProjectReference Include="tests/Tool.Tests/Tool.Tests.csproj" />

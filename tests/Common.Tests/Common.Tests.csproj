@@ -9,7 +9,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
-  <Import Project="$(RepoRoot)/tests/TestData/TestData.Includes.props" />
-  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
+  <Import Project="$(RepoRoot)/tests/TestData/TestData.projitems" />
+  <Import Project="$(RepoRoot)/src/Common/Common.projitems" />
 
 </Project>

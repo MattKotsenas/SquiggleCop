@@ -1,0 +1,11 @@
+﻿<Project>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/**/*.cs" Visible=" '$(ShowCommonFiles)' == 'true' " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DiffPlex" />
+    <PackageReference Include="Sarif.Sdk" />
+    <PackageReference Include="YamlDotNet" />
+  </ItemGroup>
+</Project>

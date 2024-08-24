@@ -21,6 +21,6 @@
     <PackageReference Include="Spectre.Console.Testing" />
   </ItemGroup>
 
-  <Import Project="$(RepoRoot)/tests/TestData/TestData.Includes.props" />
+  <Import Project="$(RepoRoot)/tests/TestData/TestData.projitems" />
 
 </Project>

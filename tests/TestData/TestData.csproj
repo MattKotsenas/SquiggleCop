@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    NOTE: This project is not intended to be referenced directly. The common components should instead be compiled
+    NOTE: This project is not intended to be referenced directly. The test data components should instead be compiled
     directly into the consuming project to reduce the dependencies and assembly load costs. Instead, Import
     `Common.Includes.props` in your project file.
 
@@ -15,7 +15,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <RootNamespace>SquiggleCop.Common</RootNamespace>
+    <RootNamespace>SquiggleCop.Common.Tests</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
@@ -24,7 +24,7 @@
   <PropertyGroup Label="Shared project settings">
     <!-- Disable default behavior so we rely on the included props -->
     <EnableDefaultItems>false</EnableDefaultItems>
-    <ShowCommonFiles>true</ShowCommonFiles>
+    <ShowTestDataFiles>true</ShowTestDataFiles>
   </PropertyGroup>
-  <Import Project="$(MSBuildThisFileDirectory)/Common.projitems" />
+  <Import Project="$(MSBuildThisFileDirectory)/TestData.projitems" />
 </Project>

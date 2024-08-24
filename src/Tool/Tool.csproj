@@ -22,7 +22,7 @@
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
-  <Import Project="$(RepoRoot)/src/Common/Common.Includes.props" />
+  <Import Project="$(RepoRoot)/src/Common/Common.projitems" />
 
   <ItemGroup>
     <PackageReference Include="Cocona" />
