@@ -1,21 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
-using DiffPlex.DiffBuilder;
-using DiffPlex.DiffBuilder.Model;
-
 using Microsoft.CodeAnalysis.Sarif;
 
 using Newtonsoft.Json;
-
-using YamlDotNet.Core.Tokens;
 
 namespace SquiggleCop.Common;
 
@@ -24,7 +16,7 @@ namespace SquiggleCop.Common;
 /// may be any JSON values) into a dictionary whose keys match the JSON object's
 /// property names, and whose values are of type <see cref="SerializedPropertyInfo"/>
 /// </summary>
-internal class PropertyBagConverter : System.Text.Json.Serialization.JsonConverter<PropertyBag>
+internal class PropertyBagConverter : System.Text.Json.Serialization.JsonConverter<IDictionary<string, SerializedPropertyInfo>>
 {
     private static readonly SerializedPropertyInfoConverter Instance = new();
 
@@ -66,13 +58,13 @@ internal class PropertyBagConverter : System.Text.Json.Serialization.JsonConvert
 
     //    writer.WriteEndObject();
     //}
-    public override PropertyBag? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IDictionary<string, SerializedPropertyInfo>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         Dictionary<string, SerializedPropertyInfo> dictionary = new();
 
         reader.Read();
 
-        while (reader.TokenType == JsonTokenType.PropertyName)
+        while (reader.TokenType != JsonTokenType.EndObject)
         {
             string name = reader.GetString()!;
             reader.Read();
@@ -83,10 +75,10 @@ internal class PropertyBagConverter : System.Text.Json.Serialization.JsonConvert
             dictionary[name] = value;
         }
 
-        return null!;
+        return dictionary;
     }
 
-    public override void Write(Utf8JsonWriter writer, PropertyBag value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IDictionary<string, SerializedPropertyInfo> value, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
     }
@@ -145,6 +137,18 @@ internal class SerializedPropertyInfoConverter : System.Text.Json.Serialization.
     //}
     public override SerializedPropertyInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            double d = reader.GetDouble();
+            return new SerializedPropertyInfo(System.Text.Json.JsonSerializer.Serialize(d), isString: false);
+        }
+
+        if (reader.TokenType == JsonTokenType.StartArray)
+        {
+            string arr = JsonExtensions.ToRawString(ref reader);
+            return new SerializedPropertyInfo(System.Text.Json.JsonSerializer.Serialize(arr), isString: false);
+        }
+
         string? value = reader.GetString();
 
         if (value is null)
@@ -154,7 +158,7 @@ internal class SerializedPropertyInfoConverter : System.Text.Json.Serialization.
 
         bool wasString = reader.TokenType == JsonTokenType.String;
 
-        return new SerializedPropertyInfo(value, wasString);
+        return new SerializedPropertyInfo(System.Text.Json.JsonSerializer.Serialize(value), wasString);
     }
 
     public override void Write(Utf8JsonWriter writer, SerializedPropertyInfo value, JsonSerializerOptions options)
@@ -301,11 +305,22 @@ internal class DataContractResolver : DefaultJsonTypeInfoResolver
         {
             jsonTypeInfo.Properties.Clear();
 
-            foreach (PropertyInfo propInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            foreach (PropertyInfo propInfo in properties)
             {
                 if (propInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() is not null)
                 {
                     continue;
+                }
+
+                if (propInfo.GetCustomAttribute<Newtonsoft.Json.JsonIgnoreAttribute>() is not null)
+                {
+                    continue;
+                }
+
+                if (propInfo.PropertyType.IsAssignableTo(typeof(IDictionary<string, SerializedPropertyInfo>)))
+                {
+                    _ = 2;
                 }
 
                 DataMemberAttribute? attr = propInfo.GetCustomAttribute<DataMemberAttribute>();
@@ -328,6 +343,33 @@ internal class DataContractResolver : DefaultJsonTypeInfoResolver
     }
 }
 
+internal static class JsonExtensions
+{
+    public static string ToRawString(ref Utf8JsonReader reader)
+    {
+        using (var jsonDoc = JsonDocument.ParseValue(ref reader))
+        {
+            return jsonDoc.RootElement.GetRawText();
+        }
+    }
+
+    public static Action<JsonTypeInfo> RemapNames(Type type, IEnumerable<KeyValuePair<string, string>> names)
+    {
+        // Snapshot the incoming map
+        var dictionary = names.ToDictionary(p => p.Key, p => p.Value).AsReadOnly();
+        return typeInfo =>
+        {
+            if (typeInfo.Kind != JsonTypeInfoKind.Object || !type.IsAssignableFrom(typeInfo.Type))
+                return;
+            foreach (var property in typeInfo.Properties)
+                if (property.GetMemberName() is { } memberName && dictionary.TryGetValue(memberName, out var jsonName))
+                    property.Name = jsonName;
+        };
+    }
+
+    public static string? GetMemberName(this JsonPropertyInfo property) => (property.AttributeProvider as MemberInfo)?.Name;
+}
+
 /// <summary>
 /// Parses SARIF logs to extract the diagnostic configurations.
 /// </summary>
@@ -337,8 +379,17 @@ public class SarifParser
     private const int MaxDiagnosticSeverities = 4; // Keep in-sync with the value of `Enum.GetValues(typeof(DiagnosticSeverity)).Length`
     private static readonly JsonSerializerOptions Options = new()
     {
-        TypeInfoResolver = new DataContractResolver(),
-        Converters = { new SarifVersionConverter(), new EnumConverterFactory(), new SerializedPropertyInfoConverter(), new PropertyBagConverter(), new SpyConverterFactory() },
+        TypeInfoResolver = new DataContractResolver
+        {
+        },
+        Converters =
+        {
+            new SarifVersionConverter(),
+            new EnumConverterFactory(),
+            new SerializedPropertyInfoConverter(),
+            new PropertyBagConverter(),
+            //new SpyConverterFactory(),
+        },
         AllowTrailingCommas = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
     };
