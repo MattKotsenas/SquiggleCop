@@ -2,7 +2,7 @@ namespace SquiggleCop.Common.Tests;
 
 public class SarifParserTests
 {
-    private readonly TestDataReader _reader = new();
+    private readonly TestDataReader _reader = new(typeof(SarifParserTests).Namespace!);
     private readonly SarifParser _parser = new();
     private readonly Serializer _serializer = new();
 

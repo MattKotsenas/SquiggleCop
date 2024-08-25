@@ -9,7 +9,7 @@ namespace SquiggleCop.Tool.Tests;
 
 public abstract class TestBase : IDisposable
 {
-    private readonly TestDataReader _testDataReader = new();
+    private readonly TestDataReader _testDataReader = new(typeof(TestBase).Namespace!);
 
     protected string TestRootPath { get; }
     protected PackageRepository Repository { get; }
@@ -20,7 +20,7 @@ public abstract class TestBase : IDisposable
 
         Uri feed = new(new FileInfo(Assembly.GetExecutingAssembly().Location).Directory!.FullName);
 
-        Repository = PackageRepository.Create(TestRootPath, /*new Uri("https://api.nuget.org/v3/index.json"),*/ feed);
+        Repository = PackageRepository.Create(TestRootPath, feed);
     }
 
     protected async Task CopyTestData(string testDataName)

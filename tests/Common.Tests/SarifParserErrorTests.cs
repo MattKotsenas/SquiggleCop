@@ -2,7 +2,7 @@
 
 public class SarifParserErrorTests
 {
-    private readonly TestDataReader _reader = new();
+    private readonly TestDataReader _reader = new(typeof(SarifParserErrorTests).Namespace!);
     private readonly SarifParser _parser = new();
 
     [Fact]

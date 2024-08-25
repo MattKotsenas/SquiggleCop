@@ -2,15 +2,9 @@
 
 namespace SquiggleCop.Common.Tests;
 
-internal class TestDataReader
+internal sealed class TestDataReader
 {
     private readonly string _namespace;
-
-    public TestDataReader()
-    {
-        Assembly assembly = typeof(TestDataReader).Assembly;
-        _namespace = assembly.GetName().Name ?? throw new InvalidOperationException("Assembly name not found");
-    }
 
     public TestDataReader(string @namespace)
     {
