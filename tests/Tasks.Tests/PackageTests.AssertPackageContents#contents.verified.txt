@@ -10,39 +10,30 @@
 |-- icon.png
 |-- tasks
 |   |-- net472
-|   |   |-- Dia2Lib.dll
 |   |   |-- DiffPlex.dll
-|   |   |-- Microsoft.Diagnostics.FastSerialization.dll
-|   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
-|   |   |-- Newtonsoft.Json.dll
-|   |   |-- Sarif.dll
+|   |   |-- Microsoft.Bcl.AsyncInterfaces.dll
 |   |   |-- SquiggleCop.Tasks.deps.json
 |   |   |-- SquiggleCop.Tasks.dll
 |   |   |-- SquiggleCop.Tasks.xml
 |   |   |-- System.Buffers.dll
-|   |   |-- System.Collections.Immutable.dll
 |   |   |-- System.Memory.dll
 |   |   |-- System.Numerics.Vectors.dll
 |   |   |-- System.Runtime.CompilerServices.Unsafe.dll
-|   |   |-- System.Text.Encoding.CodePages.dll
-|   |   |-- TraceReloggerLib.dll
+|   |   |-- System.Text.Encodings.Web.dll
+|   |   |-- System.Text.Json.dll
+|   |   |-- System.Threading.Tasks.Extensions.dll
+|   |   |-- System.ValueTuple.dll
 |   |   |-- YamlDotNet.dll
 |   |-- net6.0
-|   |   |-- Dia2Lib.dll
 |   |   |-- DiffPlex.dll
-|   |   |-- Microsoft.Diagnostics.FastSerialization.dll
-|   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
-|   |   |-- Newtonsoft.Json.dll
-|   |   |-- Sarif.dll
 |   |   |-- SquiggleCop.Tasks.deps.json
 |   |   |-- SquiggleCop.Tasks.dll
 |   |   |-- SquiggleCop.Tasks.xml
-|   |   |-- System.Collections.Immutable.dll
-|   |   |-- System.Text.Encoding.CodePages.dll
-|   |   |-- TraceReloggerLib.dll
+|   |   |-- System.Text.Encodings.Web.dll
+|   |   |-- System.Text.Json.dll
 |   |   |-- YamlDotNet.dll
 |   |   |-- runtimes
-|   |   |   |-- win
+|   |   |   |-- browser
 |   |   |   |   |-- lib
 |   |   |   |   |   |-- net6.0
-|   |   |   |   |   |   |-- System.Text.Encoding.CodePages.dll
+|   |   |   |   |   |   |-- System.Text.Encodings.Web.dll

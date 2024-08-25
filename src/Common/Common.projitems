@@ -1,11 +1,12 @@
 ﻿<Project>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)/**/*.cs" Visible=" '$(ShowCommonFiles)' == 'true' " />
+    <None Include="$(MSBuildThisFileDirectory)/**/*.md" Visible=" '$(ShowCommonFiles)' == 'true' " />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DiffPlex" />
-    <PackageReference Include="Sarif.Sdk" />
+    <PackageReference Include="System.Text.Json" />
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 </Project>

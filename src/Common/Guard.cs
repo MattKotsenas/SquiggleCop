@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-using Microsoft.CodeAnalysis.Sarif;
-
 namespace SquiggleCop.Common;
 
 internal static class Guard

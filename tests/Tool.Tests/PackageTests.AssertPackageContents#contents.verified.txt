@@ -7,11 +7,8 @@
 |   |   |-- any
 |   |   |   |-- Cocona.Core.dll
 |   |   |   |-- Cocona.dll
-|   |   |   |-- Dia2Lib.dll
 |   |   |   |-- DiffPlex.dll
 |   |   |   |-- DotnetToolSettings.xml
-|   |   |   |-- Microsoft.Diagnostics.FastSerialization.dll
-|   |   |   |-- Microsoft.Diagnostics.Tracing.TraceEvent.dll
 |   |   |   |-- Microsoft.Extensions.Configuration.Abstractions.dll
 |   |   |   |-- Microsoft.Extensions.Configuration.Binder.dll
 |   |   |   |-- Microsoft.Extensions.Configuration.CommandLine.dll
@@ -37,28 +34,15 @@
 |   |   |   |-- Microsoft.Extensions.Options.ConfigurationExtensions.dll
 |   |   |   |-- Microsoft.Extensions.Options.dll
 |   |   |   |-- Microsoft.Extensions.Primitives.dll
-|   |   |   |-- Newtonsoft.Json.dll
-|   |   |   |-- Sarif.dll
 |   |   |   |-- Spectre.Console.dll
 |   |   |   |-- SquiggleCop.Tool.deps.json
 |   |   |   |-- SquiggleCop.Tool.dll
 |   |   |   |-- SquiggleCop.Tool.runtimeconfig.json
 |   |   |   |-- SquiggleCop.Tool.xml
 |   |   |   |-- System.Diagnostics.EventLog.dll
-|   |   |   |-- TraceReloggerLib.dll
+|   |   |   |-- System.Text.Encodings.Web.dll
+|   |   |   |-- System.Text.Json.dll
 |   |   |   |-- YamlDotNet.dll
-|   |   |   |-- amd64
-|   |   |   |   |-- KernelTraceControl.dll
-|   |   |   |   |-- msdia140.dll
-|   |   |   |   |-- msvcp140.dll
-|   |   |   |   |-- vcruntime140.dll
-|   |   |   |   |-- vcruntime140_1.dll
-|   |   |   |-- arm64
-|   |   |   |   |-- KernelTraceControl.dll
-|   |   |   |   |-- msdia140.dll
-|   |   |   |   |-- msvcp140.dll
-|   |   |   |   |-- vcruntime140.dll
-|   |   |   |   |-- vcruntime140_1.dll
 |   |   |   |-- ja-JP
 |   |   |   |   |-- Cocona.Core.resources.dll
 |   |   |   |   |-- Cocona.resources.dll
@@ -66,16 +50,14 @@
 |   |   |   |   |-- Cocona.Core.resources.dll
 |   |   |   |   |-- Cocona.resources.dll
 |   |   |   |-- runtimes
+|   |   |   |   |-- browser
+|   |   |   |   |   |-- lib
+|   |   |   |   |   |   |-- net6.0
+|   |   |   |   |   |   |   |-- System.Text.Encodings.Web.dll
 |   |   |   |   |-- win
 |   |   |   |   |   |-- lib
 |   |   |   |   |   |   |-- net6.0
 |   |   |   |   |   |   |   |-- System.Diagnostics.EventLog.Messages.dll
 |   |   |   |   |   |   |   |-- System.Diagnostics.EventLog.dll
-|   |   |   |-- x86
-|   |   |   |   |-- KernelTraceControl.Win61.dll
-|   |   |   |   |-- KernelTraceControl.dll
-|   |   |   |   |-- msdia140.dll
-|   |   |   |   |-- msvcp140.dll
-|   |   |   |   |-- vcruntime140.dll
 |   |   |   |-- zh-CN
 |   |   |   |   |-- Cocona.Core.resources.dll

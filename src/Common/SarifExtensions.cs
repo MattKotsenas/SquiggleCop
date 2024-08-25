@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
-using Microsoft.CodeAnalysis.Sarif;
+using SquiggleCop.Common.Sarif;
 
 namespace SquiggleCop.Common;
 
@@ -9,19 +9,6 @@ internal static class SarifExtensions
 {
     // Fist version that has the fix for https://github.com/dotnet/roslyn/issues/73070.
     private static readonly Version Roslyn73070FixedVersion = new(4, 11, 0);
-
-    public static T OrDefault<T>(this T? value) where T : ISarifNode, new()
-    {
-        return value ?? new T();
-    }
-
-    public static T GetPropertyOrDefault<T>(this IPropertyBagHolder bag, string name, T defaultValue)
-    {
-        Guard.ThrowIfNull(bag);
-        Guard.ThrowIfNull(name);
-
-        return bag.TryGetProperty(name, out T value) ? value : defaultValue;
-    }
 
     public static string GetTitle(this ReportingDescriptor rule, Version compilerVersion)
     {
@@ -54,19 +41,20 @@ internal static class SarifExtensions
     {
         Guard.ThrowIfNull(run);
 
-        return [.. run.Tool?.Driver?.Rules ?? []];
+        IList<ReportingDescriptor> rules = run.Tool?.Driver?.Rules ?? [];
+        return new ReadOnlyCollection<ReportingDescriptor>(rules);
     }
 
     public static IReadOnlyDictionary<string, IReadOnlyCollection<ConfigurationOverride>> GetConfigurationOverrides(this Run run)
     {
         Guard.ThrowIfNull(run);
 
-        IList<Invocation> invocations = run.Invocations ?? [];
+        IList<Invocation> invocations = run.Invocations ?? Array.Empty<Invocation>();
 
         return invocations
-            .Where(i => i.RuleConfigurationOverrides is not null)
-            .SelectMany(i => i.RuleConfigurationOverrides)
-            .GroupBy(configOverride => configOverride.Descriptor.Id, StringComparer.OrdinalIgnoreCase)
+            .SelectMany(i => i.RuleConfigurationOverrides ?? Array.Empty<ConfigurationOverride>())
+            .Where(configOverride => configOverride.Descriptor?.Id is not null)
+            .GroupBy(configOverride => configOverride.Descriptor!.Id!, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(group => group.Key, group => group.ToList() as IReadOnlyCollection<ConfigurationOverride>, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -75,5 +63,15 @@ internal static class SarifExtensions
         Guard.ThrowIfNull(rc);
 
         return !rc.Enabled ? FailureLevel.None : rc.Level;
+    }
+
+    public static bool IsCSharpCompiler(this ToolComponent? tool)
+    {
+        return string.Equals(tool?.Name, "Microsoft (R) Visual C# Compiler", StringComparison.Ordinal);
+    }
+
+    public static bool TryGetVersion(this ToolComponent? tool, [NotNullWhen(true)] out Version? version)
+    {
+        return Version.TryParse(tool?.SemanticVersion, out version);
     }
 }

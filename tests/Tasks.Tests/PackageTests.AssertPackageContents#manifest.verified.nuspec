@@ -12,8 +12,5 @@
     <description>MSBuild tasks to prevent unintended changes to .NET (Roslyn) analyzers</description>
     <tags>MSBuild Analyzer</tags>
     <repository type="git" url="https://github.com/********/SquiggleCop.git" branch="********" commit="****************************************" />
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.IO.FileSystem.Primitives" targetFramework=".NETFramework4.7.2" />
-    </frameworkAssemblies>
   </metadata>
 </package>

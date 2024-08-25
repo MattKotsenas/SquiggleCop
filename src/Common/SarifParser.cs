@@ -1,9 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
 
-using Microsoft.CodeAnalysis.Sarif;
-
-using Newtonsoft.Json;
+using SquiggleCop.Common.Sarif;
 
 namespace SquiggleCop.Common;
 
@@ -13,6 +14,7 @@ namespace SquiggleCop.Common;
 public class SarifParser
 {
     private static readonly Version MinimumCompilerVersion = new(4, 8, 0);
+    private static readonly Version MinimumSarifVersion = new(2, 1, 0);
 
     /// <summary>
     /// Parses the SARIF log from the given stream and returns the diagnostic configurations.
@@ -35,18 +37,28 @@ public class SarifParser
         if (!stream.CanRead) { throw new ArgumentException("Stream must be readable", nameof(stream)); }
         if (!stream.CanSeek) { throw new ArgumentException("Stream must be seekable", nameof(stream)); }
 
-        SarifLog log;
+        SarifLog? log;
         try
         {
-            log = SarifLog.Load(stream, deferred: true);
+            log = JsonSerializer.Deserialize(stream, SourceGenerationContext.Default.SarifLog);
         }
-        catch (JsonSerializationException e) when (e.Message.Contains("Required property 'driver' not found in JSON"))
+        catch (JsonException e)
         {
-            throw new UnsupportedVersionException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
+            throw new UnsupportedVersionException("Unable to parse SARIF file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.", e);
         }
 
-        return log
-            .Runs
+        if (log is null || log.Version is null)
+        {
+            throw new UnsupportedVersionException("Unable to parse SARIF file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.");
+        }
+
+        if (new Version(log.Version) < MinimumSarifVersion)
+        {
+            throw new UnsupportedVersionException("Contents appear to be a SARIF v1 file. See https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#errorlog to enable SARIF v2 logs.");
+        }
+
+        IList<Run> runs = log.Runs ?? Array.Empty<Run>();
+        return runs
             .SelectMany(ParseRun)
             .OrderBy(dc => dc.Id, StringComparer.InvariantCulture)
             .ThenBy(dc => dc.Title, StringComparer.InvariantCulture)
@@ -84,25 +96,30 @@ public class SarifParser
 
         foreach (ReportingDescriptor rule in rules)
         {
-            ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration.OrDefault();
+            if (rule.Id is null)
+            {
+                continue;
+            }
+
+            ReportingConfiguration defaultConfiguration = rule.DefaultConfiguration;
 
             string defaultSeverity = defaultConfiguration.Level.ToString();
             string[] effectiveSeverities = [defaultConfiguration.GetEffectiveSeverity().ToString()];
 
             if (configurationOverrides.TryGetValue(rule.Id, out IReadOnlyCollection<ConfigurationOverride>? co))
             {
-                ReportingConfiguration[] rcs = co.Select(c => c.Configuration.OrDefault()).ToArray();
+                ReportingConfiguration[] rcs = co.Select(c => c.Configuration).ToArray();
                 effectiveSeverities = rcs.Select(rc => rc.GetEffectiveSeverity().ToString()).ToArray();
             }
 
             yield return new DiagnosticConfig(
                 id: rule.Id,
                 title: rule.GetTitle(version),
-                category: rule.GetPropertyOrDefault("category", defaultValue: string.Empty),
+                category: rule.Properties?.Category ?? "",
                 defaultSeverity: defaultSeverity,
                 isEnabledByDefault: defaultConfiguration.Enabled,
                 effectiveSeverities: effectiveSeverities,
-                isEverSuppressed: rule.GetPropertyOrDefault("isEverSuppressed", defaultValue: false));
+                isEverSuppressed: rule.Properties?.IsEverSuppressed ?? false);
         }
     }
 }

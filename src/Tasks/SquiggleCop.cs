@@ -1,7 +1,5 @@
 ﻿using Microsoft.Build.Framework;
 
-using Newtonsoft.Json;
-
 using SquiggleCop.Common;
 
 using Task = Microsoft.Build.Utilities.Task;
