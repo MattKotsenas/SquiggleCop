@@ -1,2 +1,6 @@
 <Project>
+  <PropertyGroup>
+    <TreatWarningsAsErrors Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">true</TreatWarningsAsErrors>
+    <MSBuildTreatWarningsAsErrors Condition=" '$(ContinuousIntegrationBuild)' == 'true' ">true</MSBuildTreatWarningsAsErrors>
+  </PropertyGroup>
 </Project>
