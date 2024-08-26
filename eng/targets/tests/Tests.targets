@@ -30,6 +30,7 @@
       ProjectDirectory="$(MSBuildProjectDirectory)"
       ReportFiles="@(_CoverageFiles)"
       TargetDirectory="$(_TestCoverageReportDirectory)"
+      FileFilters="+*;-*.g.cs"
       ReportTypes="MarkdownSummaryGithub;Cobertura;HtmlInline" />
   </Target>
 </Project>
