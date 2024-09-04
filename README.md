@@ -167,9 +167,7 @@ A baseline file is a YAML file with a repeating structure. Here's a single rule 
   Category: Design
   DefaultSeverity: Note
   IsEnabledByDefault: true
-  EffectiveSeverities:
-  - Note
-  - None
+  EffectiveSeverities: [Note, None]
   IsEverSuppressed: true
 ```
 

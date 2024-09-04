@@ -3,7 +3,7 @@
   <!--
     NOTE: This project is not intended to be referenced directly. The common components should instead be compiled
     directly into the consuming project to reduce the dependencies and assembly load costs. Instead, Import
-    `Common.Includes.props` in your project file.
+    `Common.projitems` in your project file.
 
     This project _could_ be a NoTargets project, but then Navigate-To-Definition and other editor features don't work
     when viewing files in the context of the Common project (presumably because it seems them as loose files with no
