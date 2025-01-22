@@ -253,15 +253,6 @@ Upload your SARIF reports as pipeline artifacts to help narrow down issues.
     artifact: 'sarif'
 ```
 
-### Common sources of baseline mismatches
-
-- Different MSBuild parameters locally vs CI
-  - Also check if settings are based off the `$(ContinuousIntegrationBuild)` property, which some CI providers set
-- Different SDK versions
-  - Use a [global.json](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json) to set the same SDK version
-  locally and in CI
-  - New SDK feature versions can introduce new analyzers so we suggest limiting `rollForward` to patch updates, or disable entirely
-
 ## Advanced configuration
 
 ### Set the SARIF output path
@@ -339,3 +330,24 @@ And then run `git add --renormalize .` to update Git with the re-normalized file
 
 _Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
 (CC BY 3.0)_
+
+## Frequently Asked Questions (FAQ)
+
+### I'm getting a baseline mismatch I don't understand
+
+This means that somehow you're building differently locally than you are in CI. Common causes are:
+
+- Different MSBuild parameters locally vs CI
+  - Also check if settings are based off the `$(ContinuousIntegrationBuild)` property, which some CI providers set
+- Different SDK versions
+  - Use a [global.json](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json) to set the same SDK version
+  locally and in CI
+  - New SDK feature versions can introduce new analyzers so we suggest limiting `rollForward` to patch updates, or disable entirely
+
+### I see multiple entries for EffectiveSeverities, but I only expect one
+
+This is probably because you've set rules in an `.editorconfig`, so it only applies to files that match the section. Importantly,
+this is true even for the root .editorconfig, as projects can contain files from outside the repo / project root, and thus the
+compiler is correctly (albeit pedantically) reporting that the project _could_ have files where .editorconfig rules don't apply.
+
+If you want modify an analyzer rule project-wide, use a `.globalconfig` file. 
