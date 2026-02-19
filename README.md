@@ -350,4 +350,4 @@ This is probably because you've set rules in an `.editorconfig`, so it only appl
 this is true even for the root .editorconfig, as projects can contain files from outside the repo / project root, and thus the
 compiler is correctly (albeit pedantically) reporting that the project _could_ have files where .editorconfig rules don't apply.
 
-If you want modify an analyzer rule project-wide, use a `.globalconfig` file. 
+If you want to modify an analyzer rule project-wide, use a `.globalconfig` file. 
