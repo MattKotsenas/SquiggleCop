@@ -328,7 +328,7 @@ And then run `git add --renormalize .` to update Git with the re-normalized file
 
 ---
 
-_Icon 'fractal' by Bohdan Burmich from [Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
+_Icon 'fractal' by Bohdan Burmich from [the Noun Project](https://thenounproject.com/browse/icons/term/fractal/)
 (CC BY 3.0)_
 
 ## Frequently Asked Questions (FAQ)
